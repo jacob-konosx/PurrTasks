@@ -5,7 +5,11 @@ import React from 'react'
 
 const SignOutButton: NextPage = (): JSX.Element => {
 	return (
-		<button onClick={() => signOut()} className="btn">
+		<button onClick={() => {
+			signOut()
+			localStorage.removeItem("showCompleted");
+			localStorage.removeItem("userTasks");
+		}} className="btn">
 			SIGN OUT
 		</button>
 	);

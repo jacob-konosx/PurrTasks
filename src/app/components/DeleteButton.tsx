@@ -17,7 +17,7 @@ const DeleteButton: NextPage<DeleteButtonProps> = (
 	const handleDelete = async (e: any) => {
 		e.preventDefault();
 		const res = await fetch(
-			`${process.env.API_BASE_URL}/api/tasks/${task_id}`,
+			`/api/tasks/${task_id}`,
 			{
 				method: "DELETE",
 			}

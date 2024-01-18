@@ -37,15 +37,6 @@ const NavBar: NextPage = async (): Promise<JSX.Element> => {
 							className="input input-bordered w-24 md:w-auto"
 						/>
 					</div> */}
-					<div className="hidden sm:block">
-						<div className="avatar placeholder">
-							<div className="bg-base-200 text-neutral-content rounded-full w-10 mr-2">
-								<span className="text-xs">
-									{session.user.email[0].toUpperCase()}
-								</span>
-							</div>
-						</div>
-					</div>
 					<p className="mr-2 hidden sm:block">{session.user.email}</p>
 
 					<div className="flex-none">

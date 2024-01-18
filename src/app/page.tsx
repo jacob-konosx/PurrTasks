@@ -15,10 +15,11 @@ const Home: NextPage = (): JSX.Element => {
 
 	useEffect(() => {
 		const getUserTasks = async () => {
-			const res = await fetch(`${process.env.API_BASE_URL}/api/tasks`, {
+			const res = await fetch(`/api/tasks`, {
 				method: "GET",
 			});
 			const user_tasks = await res.json();
+			localStorage.setItem("userTasks", JSON.stringify(user_tasks));
 			setUserTasks(user_tasks.filter((task: Task) => !task.finished_at));
 			setUserCompletedTasks(
 				user_tasks.filter((task: Task) => task.finished_at).reverse()
@@ -38,7 +39,7 @@ const Home: NextPage = (): JSX.Element => {
 		return (
 			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
 		);
-	if (userTasks.length === 0)
+	if (userTasks.length === 0 && userCompletedTasks.length === 0)
 		return (
 			<p className="text-center mt-10">
 				No tasks found. To create a task go to the{" "}

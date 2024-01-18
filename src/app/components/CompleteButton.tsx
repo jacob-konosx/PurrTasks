@@ -17,7 +17,7 @@ const CompleteButton: NextPage<CompleteButtonProps> = (
 	const handleComplete = async (e: any) => {
 		e.preventDefault();
 		const res = await fetch(
-			`${process.env.API_BASE_URL}/api/tasks/${task_id}`,
+			`/api/tasks/${task_id}`,
 			{
 				method: "PUT",
 				body: JSON.stringify({ finished_at: new Date() }),

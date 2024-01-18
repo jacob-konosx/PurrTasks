@@ -6,7 +6,7 @@ import toast from "react-simple-toasts";
 import DatePicker from "react-datepicker";
 import { useRouter } from "next/navigation";
 import moment from "moment";
-import 'react-simple-toasts/dist/theme/warning.css';
+import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -50,7 +50,7 @@ const page: NextPage = (): JSX.Element => {
 			toast("Tags cannot be more than 5!", { theme: "warning" });
 			return;
 		}
-		const res = await fetch(`${process.env.API_BASE_URL}/api/tasks/`, {
+		const res = await fetch(`/api/tasks/`, {
 			method: "POST",
 			body: JSON.stringify(taskData),
 		});
@@ -76,7 +76,7 @@ const page: NextPage = (): JSX.Element => {
 			tags: taskData.tags.filter((tag, i) => i !== index),
 		});
 	};
-	const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
+	const CustomDateInput = forwardRef(({ value, onClick }: any, ref: any) => (
 		<>
 			<p className="text-center mb-1">
 				{moment(taskData.end_date).format("hh:mm a")}

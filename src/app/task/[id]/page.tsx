@@ -1,37 +1,34 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../lib/auth";
+"use client";
 import { NextPage } from "next";
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { Task } from "@/app/api/schema";
 import moment from "moment";
 import CompleteButton from "../../components/CompleteButton";
 import DeleteButton from "../../components/DeleteButton";
+import { use, useEffect, useState } from "react";
+import { set } from "lodash";
 
 interface TaskPageParams {
 	params: { id: string };
 }
 
-const page: NextPage<TaskPageParams> = async ({
+const page: NextPage<TaskPageParams> = ({
 	params,
-}: TaskPageParams): Promise<JSX.Element> => {
-	const session = await getServerSession(authOptions);
-	if (!session) {
-		redirect("/auth/signin");
-	}
-	const res = await fetch(
-		`${process.env.API_BASE_URL}/api/tasks/${params.id}`,
-		{
-			method: "GET",
-			headers: headers(),
-		}
+}: TaskPageParams): JSX.Element => {
+	const [userTasks, setUserTasks] = useState<Task[]>([]);
+	const [isLoading, setLoading] = useState(true);
+	useEffect(() => {
+		setUserTasks(JSON.parse(localStorage.getItem("userTasks") || "[]"));
+		setLoading(false);
+	}, []);
+
+	const task: Task | undefined = userTasks.find(
+		(task: Task) => task.id === parseInt(params.id)
 	);
-
-	if (!res.ok) {
-		return <p className="text-center mt-10">Tasks not found.</p>;
-	}
-
-	const task: Task = await res.json();
+	if (isLoading)
+		return (
+			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
+		);
+	if (!task) return <p className="text-center mt-24">Task not found!</p>;
 	const date = moment.utc(task.end_date).local().format("HH:mm DD.MM.YYYY ");
 	const tags: string[] = task.tags.split(",");
 	const status = task.finished_at
@@ -39,14 +36,16 @@ const page: NextPage<TaskPageParams> = async ({
 		: moment(task.end_date).diff(moment().utc()) < 0
 		? "badge-error"
 		: "badge-primary";
+
 	return (
 		<div className="card lg:card-side bg-base-100 shadow-xl mb-16 mt-28 mx-4 md:mx-16 lg:mx-[15%]">
-			<figure className="md:min-h-[360px] sm:min-h-[340px]">
+			<figure className="m-auto w-full h-full max-h-[380px] max-w-[450px] md:max-h-[400px] xl:max-w-[550px]">
 				<div className={`absolute top-2 badge badge-primary ${status}`}>
 					{date}
 				</div>
 				<img
-					className="w-full h-full block max-w-[340px] max-h-[340px]  md:max-w-[380px] md:max-h-[380px] object-cover"
+					className="block object-cover"
+					//
 					src={task.img_url}
 					alt="cat"
 				/>
