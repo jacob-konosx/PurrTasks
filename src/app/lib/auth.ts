@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "../api/db";
 import { eq } from "drizzle-orm";
-import { users } from "../api/schema";
+import { users, User } from "../api/schema";
 import bcrypt from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
 				},
 			},
 
-			async authorize(credentials, req) {
+			async authorize(credentials): Promise<any> {
 				const { firstName, lastName, email, password } =
 					credentials as {
 						firstName: string;
