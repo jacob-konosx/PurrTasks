@@ -2,7 +2,6 @@
 import { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import toast from "react-simple-toasts";
 
@@ -14,28 +13,26 @@ const page: NextPage = (): JSX.Element => {
 		password: "",
 	});
 	const { data: session } = useSession();
-	const { push } = useRouter();
-
 
 	useEffect(() => {
 		if (session) {
-			push("/");
+			window.location.href = "/";
 		}
 	}, [session]);
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		if (userData.firstName === "") {
-			toast("First name cannot be empty!");
+			toast("First name cannot be empty!", { theme: "warning" });
 			return;
-		}else if (userData.lastName === "") {
-			toast("Last name cannot be empty!");
+		} else if (userData.lastName === "") {
+			toast("Last name cannot be empty!", { theme: "warning" });
 			return;
-		}else if (userData.email === "") {
-			toast("Email cannot be empty!");
+		} else if (userData.email === "") {
+			toast("Email cannot be empty!", { theme: "warning" });
 			return;
-		}else if (userData.password.length < 6) {
-			toast("Password must be at least 6 characters long!");
+		} else if (userData.password.length < 6) {
+			toast("Password must be at least 6 characters long!", {theme: "warning"});
 			return;
 		}
 		const res = await signIn("signUp", {
@@ -46,7 +43,7 @@ const page: NextPage = (): JSX.Element => {
 			password: userData.password,
 		});
 		if (res?.status == 401) {
-			toast(res?.error);
+			toast(res?.error, { theme: "failure" });
 		}
 	};
 	return (

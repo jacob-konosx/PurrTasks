@@ -41,7 +41,7 @@ const Home: NextPage = (): JSX.Element => {
 		);
 	if (userTasks.length === 0 && userCompletedTasks.length === 0)
 		return (
-			<p className="text-center mt-10">
+			<p className="text-center mt-24">
 				No tasks found. To create a task go to the{" "}
 				<span
 					className="cursor-pointer text-white "
