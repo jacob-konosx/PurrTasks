@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 	title: "Purr 🐱 Tasks",
 	description: "A simple todo app. Built with Next.js, PlanetScale (Drizzle ORM), and TailwindCSS.",
 	icons: {
-		icon: "/icon.png", // /public path
+		icon: "/icon.ico", // /public path
 	},
 };
 
@@ -24,15 +24,11 @@ export default function RootLayout({
 	return (
 		<html lang="en" data-theme="dark" className="h-[100%]">
 			<head>
-				<link rel="icon" href="/icon.ico" sizes="any" />
 				<meta charSet="utf-8" />
 				<meta
 					name="viewport"
 					content="initial-scale=1.0, width=device-width"
 				/>
-				<meta name="description" content={metadata.description} />
-				{/* <link rel="icon" href="/favicon.ico" /> */}
-				<title>{metadata.title}</title>
 			</head>
 			<body className={`${inter.className} p-0 h-auto]`}>
 				<NextAuthProvider>
