@@ -1,11 +1,9 @@
-import Link from "next/link";
-import React, { use, useEffect } from "react";
-import LoginBtn from "./LoginBtn";
-import { signOut, useSession } from "next-auth/react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../lib/auth";
-import SignOutButton from "./SignOutButton";
 import { NextPage } from "next";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
+import { authOptions } from "../lib/auth";
+import LoginBtn from "./LoginBtn";
+import SignOutButton from "./SignOutButton";
 
 const NavBar: NextPage = async (): Promise<JSX.Element> => {
 	const session = await getServerSession(authOptions);
@@ -24,7 +22,7 @@ const NavBar: NextPage = async (): Promise<JSX.Element> => {
 				)}
 			</div>
 			<div className="navbar-center">
-				<Link href="/" className="btn btn-ghost text-lg sm:text-xl">
+				<Link href="/" className="btn btn-ghost text-lg sm:text-xl lg:text-2xl">
 					Purr &#128049; Tasks
 				</Link>
 			</div>

@@ -1,9 +1,9 @@
+import bcrypt from "bcrypt";
+import { eq } from "drizzle-orm";
 import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "../api/db";
-import { eq } from "drizzle-orm";
-import { users, User } from "../api/schema";
-import bcrypt from "bcrypt";
+import { users } from "../api/schema";
 
 export const authOptions: NextAuthOptions = {
 	callbacks: {

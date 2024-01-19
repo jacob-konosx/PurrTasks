@@ -2,7 +2,7 @@
 import { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { FormEventHandler, useEffect, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import toast from "react-simple-toasts";
 
 const page: NextPage = (): JSX.Element => {

@@ -1,9 +1,9 @@
 import { authOptions } from "@/app/lib/auth";
+import { and, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { tasks } from "../../schema";
-import { and, eq } from "drizzle-orm";
 import { db } from "../../db";
+import { tasks } from "../../schema";
 
 export async function PUT(request: NextRequest, context: any) {
 	const session = await getServerSession(authOptions);
@@ -32,7 +32,7 @@ export async function PUT(request: NextRequest, context: any) {
 	} catch (error) {
 		return new NextResponse(
 			JSON.stringify({
-				message: "Couldn't update task in database.",
+				message: "Couldn't finish task in database.",
 				error,
 			}),
 			{
@@ -102,6 +102,53 @@ export async function GET(request: NextRequest, context: any) {
 		return new NextResponse(
 			JSON.stringify({
 				message: "Couldn't get task from database.",
+				error,
+			}),
+			{
+				status: 409,
+			}
+		);
+	}
+}
+export async function PATCH(request: NextRequest, context: any) {
+	const session = await getServerSession(authOptions);
+	if (!session) {
+		return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+			status: 401,
+		});
+	}
+	const session_id = session.user.id;
+	const task_id = context.params.id;
+
+	const body = await request.json();
+	const { user_id, title, text, tags, end_date } = body as {
+		user_id: number;
+		title: string;
+		text: string;
+		tags: string[];
+		end_date: string;
+	};
+	try {
+		await db
+			.update(tasks)
+			.set({
+				user_id,
+				title,
+				text,
+				tags: tags.toString(),
+				end_date: new Date(end_date),
+			})
+			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));
+		return new NextResponse(
+			JSON.stringify({ message: `Task Updated Successfully` }),
+			{
+				status: 200,
+			}
+		);
+	} catch (error) {
+		return new NextResponse(
+			JSON.stringify({
+				message: "Couldn't update task in database.",
 				error,
 			}),
 			{

@@ -1,18 +1,17 @@
 "use client";
 import { NextPage } from "next";
 import { useRouter } from "next/navigation";
-import React from "react";
 import toast from "react-simple-toasts";
-import "react-simple-toasts/dist/theme/success.css";
 import "react-simple-toasts/dist/theme/failure.css";
+import "react-simple-toasts/dist/theme/success.css";
 
 interface CompleteButtonProps {
 	task_id: number;
 }
 const CompleteButton: NextPage<CompleteButtonProps> = (
-	props: CompleteButtonProps
+	props
 ): JSX.Element => {
-	const { task_id } = props as { task_id: number };
+	const { task_id } = props;
 	const { push } = useRouter();
 	const handleComplete = async (e: any) => {
 		e.preventDefault();
@@ -31,7 +30,10 @@ const CompleteButton: NextPage<CompleteButtonProps> = (
 		push("/");
 	};
 	return (
-		<button className="btn btn-success" onClick={(e) => handleComplete(e)}>
+		<button
+			className="btn btn-success btn-sm sm:btn-md"
+			onClick={(e) => handleComplete(e)}
+		>
 			COMPLETE
 		</button>
 	);

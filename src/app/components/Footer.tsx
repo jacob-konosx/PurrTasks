@@ -1,5 +1,4 @@
 import { NextPage } from "next";
-import React from "react";
 
 const Footer: NextPage= (): JSX.Element => {
 	return (

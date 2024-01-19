@@ -1,11 +1,11 @@
 "use client";
-import { NextPage } from "next";
 import { Task } from "@/app/api/schema";
 import moment from "moment";
+import { NextPage } from "next";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import CompleteButton from "../../components/CompleteButton";
 import DeleteButton from "../../components/DeleteButton";
-import { use, useEffect, useState } from "react";
-import { set } from "lodash";
 
 interface TaskPageParams {
 	params: { id: string };
@@ -61,8 +61,18 @@ const page: NextPage<TaskPageParams> = ({
 						</div>
 					))}
 				</div>
-				<div className="card-actions justify-end">
-					{!task.finished_at && <CompleteButton task_id={task.id} />}
+				<div className="card-actions justify-end m-auto">
+					{!task.finished_at && (
+						<>
+							<Link
+								href={`/edit/${task.id}`}
+								className="btn btn-warning btn-sm sm:btn-md"
+							>
+								EDIT
+							</Link>
+							<CompleteButton task_id={task.id} />
+						</>
+					)}
 					<DeleteButton task_id={task.id} />
 				</div>
 			</div>

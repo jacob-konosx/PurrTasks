@@ -1,15 +1,14 @@
-import React from "react";
-import { Task } from "../api/schema";
-import Link from "next/link";
 import moment from "moment";
 import { NextPage } from "next";
+import Link from "next/link";
+import { Task } from "../api/schema";
 
 interface TaskProps {
 	task: Task;
 }
 
-const TaskCard: NextPage<TaskProps> = (props : TaskProps): JSX.Element => {
-	const { task } = props as { task: Task };
+const TaskCard: NextPage<TaskProps> = (props): JSX.Element => {
+	const { task } = props;
 	const date = moment.utc(task.end_date).local().format("hh:mm a DD.MM.YYYY");
 	const tags: string[] = task.tags.split(",");
 	const status = task.finished_at

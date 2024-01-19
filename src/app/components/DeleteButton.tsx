@@ -1,18 +1,17 @@
 "use client";
 import { NextPage } from "next";
 import { useRouter } from "next/navigation";
-import React from "react";
 import toast from "react-simple-toasts";
-import "react-simple-toasts/dist/theme/success.css";
 import "react-simple-toasts/dist/theme/failure.css";
+import "react-simple-toasts/dist/theme/success.css";
 
 interface DeleteButtonProps {
 	task_id: number;
 }
 const DeleteButton: NextPage<DeleteButtonProps> = (
-	props: DeleteButtonProps
+	props
 ): JSX.Element => {
-	const { task_id } = props as { task_id: number };
+	const { task_id } = props;
 	const { push } = useRouter();
 	const handleDelete = async (e: any) => {
 		e.preventDefault();
@@ -30,7 +29,10 @@ const DeleteButton: NextPage<DeleteButtonProps> = (
 		push("/");
 	};
 	return (
-		<button className="btn btn-error" onClick={(e) => handleDelete(e)}>
+		<button
+			className="btn btn-error btn-sm sm:btn-md"
+			onClick={(e) => handleDelete(e)}
+		>
 			DELETE
 		</button>
 	);

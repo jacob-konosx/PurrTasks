@@ -1,6 +1,6 @@
 "use client";
 import { NextPage } from "next";
-import React, { use, useEffect } from "react";
+import React from "react";
 
 const TaskSettings: NextPage = (): JSX.Element => {
 	const [checkedStatus, setCheckedStatus] = React.useState(

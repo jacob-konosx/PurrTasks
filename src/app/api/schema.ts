@@ -1,9 +1,9 @@
 import { sql } from "drizzle-orm";
 import {
+	datetime,
 	int,
 	mysqlTable,
 	varchar,
-	datetime,
 } from "drizzle-orm/mysql-core";
 // declaring enum in database
 export const users = mysqlTable("users", {

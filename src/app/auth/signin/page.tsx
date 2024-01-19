@@ -2,10 +2,10 @@
 import { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { FormEventHandler, use, useEffect, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import toast from "react-simple-toasts";
-import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/failure.css";
+import "react-simple-toasts/dist/theme/warning.css";
 
 const page: NextPage = (): JSX.Element => {
 	const { data: session } = useSession();

@@ -1,9 +1,9 @@
 "use client";
 import { NextPage } from "next";
-import TaskCard from "./components/TaskCard";
-import { Task } from "./api/schema";
-import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Task } from "./api/schema";
+import TaskCard from "./components/TaskCard";
 import TaskSettings from "./components/TaskSettings";
 
 const Home: NextPage = (): JSX.Element => {
@@ -42,7 +42,7 @@ const Home: NextPage = (): JSX.Element => {
 	if (userTasks.length === 0 && userCompletedTasks.length === 0)
 		return (
 			<div className="m-auto  mt-40">
-				<p className="text-center">
+				<p className="text-center mx-2">
 					No tasks found. To create a task go to the{" "}
 					<span
 						className="cursor-pointer text-white "
