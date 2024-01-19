@@ -10,6 +10,10 @@ import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-datepicker/dist/react-datepicker.css";
 
+function addMins(date: Date, minutes: number) {
+	date.setMinutes(date.getMinutes() + minutes);
+	return date;
+}
 interface TaskData {
 	user_id: number;
 	text: string;
@@ -26,7 +30,7 @@ const page: NextPage = (): JSX.Element => {
 		text: "",
 		tags: [],
 		title: "",
-		end_date: new Date(),
+		end_date: addMins(new Date(), 5),
 	});
 
 	useEffect(() => {
@@ -63,7 +67,7 @@ const page: NextPage = (): JSX.Element => {
 	const addTaskTag = (e: any) => {
 		e.preventDefault();
 		if (tagInput === "" || tagInput.includes(",")) {
-			toast("Invalid Tag!");
+			toast("Invalid Tag!", { theme: "warning" });
 			return;
 		}
 		setTaskData({ ...taskData, tags: [...taskData.tags, tagInput] });
@@ -75,6 +79,12 @@ const page: NextPage = (): JSX.Element => {
 			...taskData,
 			tags: taskData.tags.filter((tag, i) => i !== index),
 		});
+	};
+	const filterPassedTime = (time: Date) => {
+		const currentDate = new Date();
+		const selectedDate = new Date(time);
+
+		return currentDate.getTime() < selectedDate.getTime();
 	};
 	const CustomDateInput = forwardRef(({ value, onClick }: any, ref: any) => (
 		<>
@@ -93,13 +103,6 @@ const page: NextPage = (): JSX.Element => {
 			</button>
 		</>
 	));
-	// const CustomTimeInput = ({ date, value, onChange }) => (
-	// 	<input
-	// 		value={value}
-	// 		onChange={(e) => onChange(e.target.value)}
-	// 		className="bg-white border-solid border-2 border-black rounded-md p-1"
-	// 	/>
-	// );
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
 			<label className="form-control w-full max-w-xs">
@@ -170,16 +173,17 @@ const page: NextPage = (): JSX.Element => {
 				</div>
 			</label>
 
-			<DatePicker
-				showTimeSelect
-				selected={taskData.end_date}
-				onChange={(date: Date) =>
-					setTaskData({ ...taskData, end_date: date })
-				}
-				customInput={<CustomDateInput />}
-				// customTimeInput={<CustomTimeInput />}
-				// showTimeInput
-			/>
+				<DatePicker
+					showTimeSelect
+					selected={taskData.end_date}
+					onChange={(date: Date) =>
+						setTaskData({ ...taskData, end_date: date })
+					}
+					customInput={<CustomDateInput />}
+					minDate={moment().toDate()}
+					filterTime={filterPassedTime}
+					timeIntervals={5}
+					/>
 
 			<button className="btn btn-outline mt-8">CREATE TASK</button>
 		</form>

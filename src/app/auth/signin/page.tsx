@@ -21,11 +21,16 @@ const page: NextPage = (): JSX.Element => {
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
+		const emailRegex =
+					/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 		if (userData.email === "") {
 			toast("Email cannot be empty!", { theme: "warning" });
 			return;
 		} else if (userData.password.length < 6) {
 			toast("Password must be at least 6 characters long!", {theme: "warning"});
+			return;
+		}else if (!emailRegex.test(userData.email)) {
+			toast("Invalid email!", { theme: "warning" });
 			return;
 		}
 		const res = await signIn("credentials", {
@@ -67,12 +72,12 @@ const page: NextPage = (): JSX.Element => {
 						setUserData({ ...userData, password: e.target.value })
 					}
 				/>
-				<div className="label">
+				<div className="label mt-2 mb-4">
 					<span className="label-text-alt">
 						Dont have an account?
 					</span>
 					<span className="label-text-alt">
-						<Link href="/auth/signup" className="btn">
+						<Link href="/auth/signup" className="text-stone-100">
 							SIGN UP
 						</Link>
 					</span>
