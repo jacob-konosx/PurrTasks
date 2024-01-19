@@ -4,6 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { FormEventHandler, useEffect, useState } from "react";
 import toast from "react-simple-toasts";
+import "react-simple-toasts/dist/theme/success.css";
 
 const page: NextPage = (): JSX.Element => {
 	const [userData, setUserData] = useState({
@@ -49,6 +50,8 @@ const page: NextPage = (): JSX.Element => {
 		if (res?.status == 401) {
 			toast(res?.error, { theme: "failure" });
 		}
+		toast("Sign-up Successful!", { theme: "success" });
+
 	};
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>

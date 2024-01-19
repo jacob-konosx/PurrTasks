@@ -6,6 +6,7 @@ import { FormEventHandler, useEffect, useState } from "react";
 import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
+import "react-simple-toasts/dist/theme/success.css";
 
 const page: NextPage = (): JSX.Element => {
 	const { data: session } = useSession();
@@ -40,7 +41,10 @@ const page: NextPage = (): JSX.Element => {
 		});
 		if (res?.status == 401) {
 			toast(res?.error, { theme: "failure" });
+			return
 		}
+		toast("Sign-in Successful!", { theme: "success" });
+
 	};
 
 	return (
