@@ -1,12 +1,7 @@
 "use client";
 import moment from "moment";
 import { NextPage } from "next";
-import {
-	Dispatch,
-	SetStateAction,
-	forwardRef,
-	useState,
-} from "react";
+import { Dispatch, SetStateAction, forwardRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import toast from "react-simple-toasts";
@@ -136,15 +131,18 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 				{taskData.tags.length !== 0 && (
 					<div className="mt-2">
 						Tags:{" "}
-						{taskData.tags.map((tag: string, index) => (
-							<span
-								className="!inline hover:text-white cursor-pointer"
-								onClick={(e) => deleteTag(e, index)}
-								key={index}
-							>
-								{tag},{" "}
-							</span>
-						))}
+						{taskData.tags.map((tag: string, index) => {
+							const isLastTag = index === taskData.tags.length - 1;
+							return (
+								<span
+									className="!inline hover:text-white cursor-pointer"
+									onClick={(e) => deleteTag(e, index)}
+									key={index}
+								>
+									{tag}{!isLastTag ? ", ": ""}
+								</span>
+							);
+						})}
 					</div>
 				)}
 			</label>

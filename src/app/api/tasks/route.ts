@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
 		});
 	}
 	const body = await request.json();
-	const session_id = session.user.id;
 	const { user_id, title, text, tags, end_date } = body as {
 		user_id: number;
 		title: string;
@@ -49,7 +48,6 @@ export async function POST(request: NextRequest) {
 		tags: string[];
 		end_date: string;
 	};
-	console.log(session);
 
 	try {
 		const res = await fetch(`https://api.thecatapi.com/v1/images/search`, {

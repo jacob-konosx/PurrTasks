@@ -109,7 +109,7 @@ const page: NextPage = (): JSX.Element => {
 				/>
 				<div className="label mt-2 mb-4">
 					<span className="label-text-alt">
-						Dont have an account?
+						Already have an account?
 					</span>
 					<span className="label-text-alt">
 						<Link href="/auth/signin" className="text-stone-100">
