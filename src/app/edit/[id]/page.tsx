@@ -79,14 +79,12 @@ const page: NextPage<TaskPageParams> = ({
 		push("/");
 	};
 	return (
-		<form
-			className="grid place-items-center mt-24 mx-4 pb-16"
-			onSubmit={handleUpdate}
-		>
-			<h1 className="mb-2">EDITING</h1>
-			<Form taskData={taskData} setTaskData={setTaskData} />
-			<button className="btn btn-outline mt-8">EDIT TASK</button>
-		</form>
+		<Form
+			taskData={taskData}
+			setTaskData={setTaskData}
+			handleSubmit={handleUpdate}
+			buttonText="EDIT TASK"
+		/>
 	);
 };
 export default page;

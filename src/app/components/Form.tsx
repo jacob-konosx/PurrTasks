@@ -1,7 +1,7 @@
 "use client";
 import moment from "moment";
 import { NextPage } from "next";
-import { Dispatch, SetStateAction, forwardRef, useState } from "react";
+import { Dispatch, FormEventHandler, SetStateAction, forwardRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import toast from "react-simple-toasts";
@@ -24,10 +24,12 @@ export interface TaskData {
 interface FormProps {
 	taskData: TaskData;
 	setTaskData: Dispatch<SetStateAction<TaskData>>;
+	handleSubmit: FormEventHandler<HTMLFormElement>;
+	buttonText: string;
 }
 const Form: NextPage<FormProps> = (props): JSX.Element => {
 	const [tagInput, setTagInput] = useState("");
-	const { taskData, setTaskData } = props;
+	const { taskData, setTaskData, handleSubmit, buttonText } = props;
 
 	const addTaskTag = (e: any) => {
 		e.preventDefault();
@@ -69,7 +71,10 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 		</>
 	));
 	return (
-		<>
+		<form
+			className="grid place-items-center mt-24 px-4 pb-20"
+			onSubmit={handleSubmit}
+		>
 			<label htmlFor="title" className="form-control w-full max-w-xs">
 				<div className="w-full">
 					{taskData.img_url && (
@@ -172,7 +177,8 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 				filterTime={filterPassedTime}
 				timeIntervals={5}
 			/>
-		</>
+			<button className="btn btn-outline mt-8">{buttonText}</button>
+		</form>
 	);
 };
 

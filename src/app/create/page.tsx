@@ -55,13 +55,12 @@ const page: NextPage = (): JSX.Element => {
 	};
 
 	return (
-		<form
-			className="grid place-items-center mt-24 px-4 pb-16"
-			onSubmit={handleSubmit}
-		>
-			<Form taskData={taskData} setTaskData={setTaskData} />
-			<button className="btn btn-outline mt-8">CREATE TASK</button>
-		</form>
+		<Form
+			taskData={taskData}
+			setTaskData={setTaskData}
+			handleSubmit={handleSubmit}
+			buttonText="CREATE TASK"
+		/>
 	);
 };
 
