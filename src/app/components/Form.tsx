@@ -70,7 +70,7 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 	));
 	return (
 		<>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="title" className="form-control w-full max-w-xs">
 				<div className="w-full">
 					{taskData.img_url && (
 						<img
@@ -86,6 +86,7 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 					<span className="label-text">Title</span>
 				</div>
 				<input
+					id="title"
 					type="text"
 					placeholder="Enter title"
 					className="input input-bordered w-full max-w-xs"
@@ -95,11 +96,15 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 					}
 				/>
 			</label>
-			<label className="form-control w-full max-w-xs">
+			<label
+				htmlFor="description"
+				className="form-control w-full max-w-xs"
+			>
 				<div className="label">
 					<span className="label-text">Description</span>
 				</div>
 				<textarea
+					id="description"
 					placeholder="Enter description"
 					className="textarea textarea-bordered w-full max-w-xs"
 					value={taskData.text}
@@ -108,13 +113,14 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 					}
 				/>
 			</label>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="tags" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">Tags</span>
 					<span className="label-text">Click To Remove</span>
 				</div>
-				<div>
+				<div className="whitespace-nowrap">
 					<input
+						id="tags"
 						type="text"
 						placeholder="Enter tag"
 						className="input input-bordered w-60 mr-4"
@@ -122,7 +128,7 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 						onChange={(e) => setTagInput(e.target.value)}
 					/>
 					<button
-						className="btn btn-outline"
+						className="btn btn-outline inline-block	"
 						onClick={(e) => addTaskTag(e)}
 					>
 						ADD
@@ -132,27 +138,30 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 					<div className="mt-2">
 						Tags:{" "}
 						{taskData.tags.map((tag: string, index) => {
-							const isLastTag = index === taskData.tags.length - 1;
+							const isLastTag =
+								index === taskData.tags.length - 1;
 							return (
 								<span
 									className="!inline hover:text-white cursor-pointer"
 									onClick={(e) => deleteTag(e, index)}
 									key={index}
 								>
-									{tag}{!isLastTag ? ", ": ""}
+									{tag}
+									{!isLastTag ? ", " : ""}
 								</span>
 							);
 						})}
 					</div>
 				)}
 			</label>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="end_date" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">End Date</span>
 				</div>
 			</label>
 
 			<DatePicker
+				id="end_date"
 				showTimeSelect
 				selected={taskData.end_date}
 				onChange={(date: Date) =>

@@ -61,7 +61,7 @@ const page: NextPage<TaskPageParams> = ({
 						</div>
 					))}
 				</div>
-				<div className="card-actions justify-end m-auto">
+				<div className="card-actions justify-end m-auto mt-4 whitespace-nowrap">
 					{!task.finished_at && (
 						<>
 							<Link

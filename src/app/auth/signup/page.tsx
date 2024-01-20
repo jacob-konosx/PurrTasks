@@ -55,11 +55,12 @@ const page: NextPage = (): JSX.Element => {
 	};
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="first_name" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">First Name</span>
 				</div>
 				<input
+				id="first_name"
 					type="text"
 					placeholder="Enter first name"
 					className="input input-bordered w-full max-w-xs"
@@ -69,11 +70,12 @@ const page: NextPage = (): JSX.Element => {
 					}
 				/>
 			</label>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="last_name" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">Last Name</span>
 				</div>
 				<input
+				id="last_name"
 					type="text"
 					placeholder="Enter last name"
 					className="input input-bordered w-full max-w-xs"
@@ -83,11 +85,12 @@ const page: NextPage = (): JSX.Element => {
 					}
 				/>
 			</label>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="email" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">Email</span>
 				</div>
 				<input
+				id="email"
 					type="email"
 					placeholder="Enter email"
 					className="input input-bordered w-full max-w-xs"
@@ -97,11 +100,12 @@ const page: NextPage = (): JSX.Element => {
 					}
 				/>
 			</label>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="password" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">Password</span>
 				</div>
 				<input
+					id="password"
 					type="password"
 					placeholder="Enter password"
 					className="input input-bordered w-full max-w-xs"

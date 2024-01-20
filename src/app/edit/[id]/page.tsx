@@ -75,14 +75,17 @@ const page: NextPage<TaskPageParams> = ({
 			toast("Error updating task!", { theme: "failure" });
 			return;
 		}
-		toast("Task Updated!", { theme: "success" });
+		toast("Task Edited!", { theme: "success" });
 		push("/");
 	};
 	return (
-		<form className="grid place-items-center mt-24 mx-4" onSubmit={handleUpdate}>
+		<form
+			className="grid place-items-center mt-24 mx-4 pb-16"
+			onSubmit={handleUpdate}
+		>
 			<h1 className="mb-2">EDITING</h1>
 			<Form taskData={taskData} setTaskData={setTaskData} />
-			<button className="btn btn-outline mt-8">CREATE TASK</button>
+			<button className="btn btn-outline mt-8">EDIT TASK</button>
 		</form>
 	);
 };

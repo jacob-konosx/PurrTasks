@@ -21,7 +21,7 @@ const NavBar: NextPage = async (): Promise<JSX.Element> => {
 					</div>
 				)}
 			</div>
-			<div className="navbar-center">
+			<div className="navbar-center block">
 				<Link href="/" className="btn btn-ghost text-lg sm:text-xl lg:text-2xl">
 					Purr &#128049; Tasks
 				</Link>

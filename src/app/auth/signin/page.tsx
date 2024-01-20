@@ -22,15 +22,16 @@ const page: NextPage = (): JSX.Element => {
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		const emailRegex =
-					/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 		if (userData.email === "") {
 			toast("Email cannot be empty!", { theme: "warning" });
 			return;
 		} else if (userData.password.length < 6) {
-			toast("Password must be at least 6 characters long!", {theme: "warning"});
+			toast("Password must be at least 6 characters long!", {
+				theme: "warning",
+			});
 			return;
-		}else if (!emailRegex.test(userData.email)) {
+		} else if (!emailRegex.test(userData.email)) {
 			toast("Invalid email!", { theme: "warning" });
 			return;
 		}
@@ -41,19 +42,19 @@ const page: NextPage = (): JSX.Element => {
 		});
 		if (res?.status == 401) {
 			toast(res?.error, { theme: "failure" });
-			return
+			return;
 		}
 		toast("Sign-in Successful!", { theme: "success" });
-
 	};
 
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="email" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">Email</span>
 				</div>
 				<input
+					id="email"
 					type="email"
 					placeholder="Enter Email"
 					className="input input-bordered w-full max-w-xs"
@@ -63,11 +64,12 @@ const page: NextPage = (): JSX.Element => {
 					}
 				/>
 			</label>
-			<label className="form-control w-full max-w-xs">
+			<label htmlFor="password" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">Password</span>
 				</div>
 				<input
+					id="password"
 					type="password"
 					placeholder="Enter Password"
 					className="input input-bordered w-full max-w-xs"

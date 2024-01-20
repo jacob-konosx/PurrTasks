@@ -140,7 +140,7 @@ export async function PATCH(request: NextRequest, context: any) {
 			})
 			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));
 		return new NextResponse(
-			JSON.stringify({ message: `Task Updated Successfully` }),
+			JSON.stringify({ message: `Task Edited Successfully` }),
 			{
 				status: 200,
 			}
@@ -148,7 +148,7 @@ export async function PATCH(request: NextRequest, context: any) {
 	} catch (error) {
 		return new NextResponse(
 			JSON.stringify({
-				message: "Couldn't update task in database.",
+				message: "Couldn't edit task in database.",
 				error,
 			}),
 			{
