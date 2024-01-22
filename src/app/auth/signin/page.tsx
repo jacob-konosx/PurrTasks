@@ -40,11 +40,11 @@ const page: NextPage = (): JSX.Element => {
 			email: userData.email,
 			password: userData.password,
 		});
-		if (res?.status == 401) {
+		if (!res?.ok) {
 			toast(res?.error, { theme: "failure" });
-			return;
+		} else {
+			toast("Sign-in Successful!", { theme: "success" });
 		}
-		toast("Sign-in Successful!", { theme: "success" });
 	};
 
 	return (

@@ -33,11 +33,13 @@ const page: NextPage = (): JSX.Element => {
 		} else if (userData.email === "") {
 			toast("Email cannot be empty!", { theme: "warning" });
 			return;
-		}else if (!emailRegex.test(userData.email)) {
+		} else if (!emailRegex.test(userData.email)) {
 			toast("Invalid email!", { theme: "warning" });
 			return;
-		}else if (userData.password.length < 6) {
-			toast("Password must be at least 6 characters long!", {theme: "warning"});
+		} else if (userData.password.length < 6) {
+			toast("Password must be at least 6 characters long!", {
+				theme: "warning",
+			});
 			return;
 		}
 		const res = await signIn("signUp", {
@@ -47,20 +49,23 @@ const page: NextPage = (): JSX.Element => {
 			email: userData.email,
 			password: userData.password,
 		});
-		if (res?.status == 401) {
+		if (!res?.ok) {
 			toast(res?.error, { theme: "failure" });
+		} else {
+			toast("Sign-up Successful!", { theme: "success" });
 		}
-		toast("Sign-up Successful!", { theme: "success" });
-
 	};
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
-			<label htmlFor="first_name" className="form-control w-full max-w-xs">
+			<label
+				htmlFor="first_name"
+				className="form-control w-full max-w-xs"
+			>
 				<div className="label">
 					<span className="label-text">First Name</span>
 				</div>
 				<input
-				id="first_name"
+					id="first_name"
 					type="text"
 					placeholder="Enter first name"
 					className="input input-bordered w-full max-w-xs"
@@ -75,7 +80,7 @@ const page: NextPage = (): JSX.Element => {
 					<span className="label-text">Last Name</span>
 				</div>
 				<input
-				id="last_name"
+					id="last_name"
 					type="text"
 					placeholder="Enter last name"
 					className="input input-bordered w-full max-w-xs"
@@ -90,7 +95,7 @@ const page: NextPage = (): JSX.Element => {
 					<span className="label-text">Email</span>
 				</div>
 				<input
-				id="email"
+					id="email"
 					type="email"
 					placeholder="Enter email"
 					className="input input-bordered w-full max-w-xs"

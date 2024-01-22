@@ -16,6 +16,7 @@ const page: NextPage<TaskPageParams> = ({
 }: TaskPageParams): JSX.Element => {
 	const [userTasks, setUserTasks] = useState<Task[]>([]);
 	const [isLoading, setLoading] = useState(true);
+
 	useEffect(() => {
 		setUserTasks(JSON.parse(localStorage.getItem("userTasks") || "[]"));
 		setLoading(false);
@@ -24,11 +25,14 @@ const page: NextPage<TaskPageParams> = ({
 	const task: Task | undefined = userTasks.find(
 		(task: Task) => task.id === parseInt(params.id)
 	);
+
 	if (isLoading)
 		return (
 			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
 		);
+
 	if (!task) return <p className="text-center mt-24">Task not found!</p>;
+
 	const date = moment.utc(task.end_date).local().format("HH:mm DD.MM.YYYY ");
 	const tags: string[] = task.tags.split(",");
 	const status = task.finished_at
