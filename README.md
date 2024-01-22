@@ -4,6 +4,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ### This is a project for Ventspils University Web Technologies Project 2
 The website is a simple cat-themed to-do application with CRUD operations.
+Visit the website here: https://todo.konosx.dev/
 
 # Made with
 - Next.js
