@@ -9,7 +9,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
+import { useMutation } from "@tanstack/react-query";
 
+const createTask = async (taskData: TaskData) => {
+	const res = await fetch(`/api/tasks/`, {
+		method: "POST",
+		body: JSON.stringify(taskData),
+	});
+	if (!res.ok) {
+		throw new Error("Failed to create task");
+	}
+	return res.json();
+};
 const page: NextPage = (): JSX.Element => {
 	const { data: session } = useSession();
 	const { push } = useRouter();
@@ -19,6 +30,17 @@ const page: NextPage = (): JSX.Element => {
 		tags: [],
 		title: "",
 		end_date: addMins(new Date(), 5),
+	});
+
+	const { mutate } = useMutation({
+		mutationFn: createTask,
+		onSuccess: () => {
+			toast("Task Created!", { theme: "success" });
+			push("/");
+		},
+		onError: () => {
+			toast("Error creating task!", { theme: "failure" });
+		},
 	});
 
 	useEffect(() => {
@@ -42,16 +64,7 @@ const page: NextPage = (): JSX.Element => {
 			toast("Tags cannot be more than 5!", { theme: "warning" });
 			return;
 		}
-		const res = await fetch(`/api/tasks/`, {
-			method: "POST",
-			body: JSON.stringify(taskData),
-		});
-		if (!res.ok) {
-			toast("Error creating task!", { theme: "failure" });
-			return;
-		}
-		toast("Task Created!", { theme: "success" });
-		push("/");
+		mutate(taskData);
 	};
 
 	return (

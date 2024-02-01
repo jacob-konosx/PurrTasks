@@ -5,41 +5,53 @@ import { useEffect, useState } from "react";
 import { Task } from "./api/schema";
 import TaskCard from "./components/TaskCard";
 import TaskSettings from "./components/TaskSettings";
+import { useQuery } from "@tanstack/react-query";
+
+const fetchTasks = (): Promise<Task[]> =>
+	fetch(`/api/tasks`).then((res) => {
+		if (!res.ok) {
+			throw new Error("Failed to fetch");
+		}
+		return res.json();
+	})
 
 const Home: NextPage = (): JSX.Element => {
 	const { push } = useRouter();
-	const [userTasks, setUserTasks] = useState<Task[]>([]);
-	const [userCompletedTasks, setUserCompletedTasks] = useState<Task[]>([]);
-	const [isLoading, setLoading] = useState(true);
+	const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
+	const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
 	const [showCompleted, setShowCompleted] = useState<boolean | null>();
 
+	const { isLoading, data, error } = useQuery({
+		queryKey: ["tasks"],
+		queryFn: fetchTasks,
+	});
+
 	useEffect(() => {
-		const getUserTasks = async () => {
-			const res = await fetch(`/api/tasks`, {
-				method: "GET",
-			});
-			const user_tasks = await res.json();
-			localStorage.setItem("userTasks", JSON.stringify(user_tasks));
-			setUserTasks(user_tasks.filter((task: Task) => !task.finished_at));
-			setUserCompletedTasks(
-				user_tasks.filter((task: Task) => task.finished_at).reverse()
+		if (data) {
+			localStorage.setItem("userTasks", JSON.stringify(data));
+
+			setUncompletedTasks(data.filter((task: Task) => !task.finished_at));
+			setCompletedTasks(
+				data.filter((task: Task) => task.finished_at).reverse()
 			);
-			setLoading(false);
-		};
-		getUserTasks();
-		setShowCompleted(
-			!localStorage.getItem("showCompleted") ||
-				localStorage.getItem("showCompleted") === "false"
-				? false
-				: true
-		);
-	}, []);
+			setShowCompleted(
+				!localStorage.getItem("showCompleted") ||
+					localStorage.getItem("showCompleted") === "false"
+					? false
+					: true
+			);
+		}
+		if (error) {
+			console.log(error);
+		}
+	}, [data]);
 
 	if (isLoading)
 		return (
 			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
 		);
-	if (userTasks.length === 0 && userCompletedTasks.length === 0)
+
+	if (uncompletedTasks.length === 0 && completedTasks.length === 0)
 		return (
 			<div className="m-auto  mt-40">
 				<p className="text-center mx-2">
@@ -75,21 +87,22 @@ const Home: NextPage = (): JSX.Element => {
 	});
 	return (
 		<div className="mt-24 !mb-12">
-			{userCompletedTasks.length > 0 && (
+			{completedTasks.length > 0 && (
 				<div className="justify-center flex">
 					<TaskSettings />
 				</div>
 			)}
 			<div className=" sm:grid p-5 sm:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] sm:justify-items-center">
-				{userTasks.map((task: Task) => (
+				{uncompletedTasks.map((task: Task) => (
 					<TaskCard task={task} key={task.id} />
 				))}
 				{showCompleted &&
-					userCompletedTasks.map((task: Task) => (
+					completedTasks.map((task: Task) => (
 						<TaskCard task={task} key={task.id} />
 					))}
 			</div>
 		</div>
 	);
 };
+
 export default Home;

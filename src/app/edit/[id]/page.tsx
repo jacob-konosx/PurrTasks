@@ -8,9 +8,26 @@ import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
+import { useMutation } from "@tanstack/react-query";
 interface TaskPageParams {
 	params: { id: string };
 }
+const editTask = async ({
+	task_id,
+	task_data,
+}: {
+	task_id: string;
+	task_data: TaskData;
+}): Promise<any> => {
+	const res = await fetch(`/api/tasks/${task_id}`, {
+		method: "PATCH",
+		body: JSON.stringify(task_data),
+	});
+	if (!res.ok) {
+		throw new Error("Failed to edit task");
+	}
+	return res.json();
+};
 
 const page: NextPage<TaskPageParams> = ({
 	params,
@@ -24,7 +41,16 @@ const page: NextPage<TaskPageParams> = ({
 		title: "",
 		end_date: new Date(),
 	});
-
+	const { mutate } = useMutation({
+		mutationFn: editTask,
+		onSuccess: () => {
+			toast("Task Edited!", { theme: "success" });
+			push("/");
+		},
+		onError: () => {
+			toast("Error editing task!", { theme: "failure" });
+		},
+	});
 	useEffect(() => {
 		const userTasks: Task[] = JSON.parse(
 			localStorage.getItem("userTasks") || "[]"
@@ -67,16 +93,7 @@ const page: NextPage<TaskPageParams> = ({
 			toast("Tags cannot be more than 5!", { theme: "warning" });
 			return;
 		}
-		const res = await fetch(`/api/tasks/${params.id}`, {
-			method: "PATCH",
-			body: JSON.stringify(taskData),
-		});
-		if (!res.ok) {
-			toast("Error updating task!", { theme: "failure" });
-			return;
-		}
-		toast("Task Edited!", { theme: "success" });
-		push("/");
+		mutate({ task_id: params.id, task_data: taskData });
 	};
 	return (
 		<Form

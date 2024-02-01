@@ -5,12 +5,14 @@ import "./globals.css";
 
 import NextAuthProvider from "./NextAuthProvider";
 import Footer from "./components/Footer";
+import { ReactQueryProvider } from "./ReactQueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Purr 🐱 Tasks",
-	description: "A simple todo app. Built with Next.js, PlanetScale (Drizzle ORM), and TailwindCSS.",
+	description:
+		"A simple todo app. Built with Next.js, PlanetScale (Drizzle ORM), and TailwindCSS.",
 	icons: {
 		icon: "/icon.ico", // /public path
 	},
@@ -32,9 +34,11 @@ export default function RootLayout({
 			</head>
 			<body className={`${inter.className} p-0 h-auto]`}>
 				<NextAuthProvider>
-					<NavBar />
-					<main className="h-full pb-1">{children}</main>
-					<Footer />
+					<ReactQueryProvider>
+						<NavBar />
+						<main className="h-full pb-1">{children}</main>
+						<Footer />
+					</ReactQueryProvider>
 				</NextAuthProvider>
 			</body>
 		</html>
