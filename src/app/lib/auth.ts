@@ -4,6 +4,7 @@ import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "../api/db";
 import { users } from "../api/schema";
+import { sendEmail } from "./mailer";
 
 export const authOptions: NextAuthOptions = {
 	callbacks: {
@@ -28,62 +29,6 @@ export const authOptions: NextAuthOptions = {
 	},
 	providers: [
 		Credentials({
-			id: "signUp",
-
-			credentials: {
-				email: {
-					label: "Email",
-					type: "email",
-				},
-				password: {
-					label: "Password",
-					type: "passsword",
-				},
-				firstName: {
-					label: "First Name",
-					type: "text",
-				},
-				lastName: {
-					label: "Last Name",
-					type: "text",
-				},
-			},
-
-			async authorize(credentials): Promise<any> {
-				const { firstName, lastName, email, password } =
-					credentials as {
-						firstName: string;
-						lastName: string;
-						email: string;
-						password: string;
-					};
-
-				const oldUser = await db.query.users.findFirst({
-					where: eq(users.email, email),
-				});
-				if (oldUser)
-					throw new Error("User with this email already exists!");
-
-				const hashedPassword = await bcrypt.hash(password, 12);
-
-				try {
-					await db.insert(users).values({
-						first_name: firstName,
-						last_name: lastName,
-						email,
-						password: hashedPassword,
-					});
-					const newUser = await db.query.users.findFirst({
-						where: eq(users.email, email),
-					});
-					return newUser;
-				} catch (error) {
-					console.error(error);
-					throw new Error("Unable to create new user at this time!");
-				}
-			},
-		}),
-		Credentials({
 			type: "credentials",
 			credentials: {
 				email: { label: "Email", type: "email", placeholder: "" },
@@ -105,6 +50,9 @@ export const authOptions: NextAuthOptions = {
 
 				if (!user) {
 					throw new Error("User with this email doesn't exist!");
+				}
+				if (!user.is_verified) {
+					throw new Error("User not verified! Verify your email to login.");
 				}
 				const isPasswordCorrect = await bcrypt.compare(
 					password,

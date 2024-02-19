@@ -121,21 +121,19 @@ export async function PATCH(request: NextRequest, context: any) {
 	const task_id = context.params.id;
 
 	const body = await request.json();
-	const { user_id, title, text, tags, end_date } = body as {
-		user_id: number;
+	const { title, text, tags, end_date } = body as {
 		title: string;
 		text: string;
-		tags: string[];
+		tags: string;
 		end_date: string;
 	};
 	try {
 		await db
 			.update(tasks)
 			.set({
-				user_id,
 				title,
 				text,
-				tags: tags.toString(),
+				tags,
 				end_date: new Date(end_date),
 			})
 			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));

@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+	boolean,
 	datetime,
 	int,
 	mysqlTable,
@@ -15,6 +16,11 @@ export const users = mysqlTable("users", {
 	created_at: datetime("created_at")
 		.default(sql`CURRENT_TIMESTAMP`)
 		.notNull(),
+	forgot_password_token: varchar("forgot_password_token", { length: 256 }),
+	verify_token: varchar("verify_token", { length: 256 }),
+	verify_token_expiry: datetime("verify_token_expiry"),
+	forgot_password_token_expiry: datetime("forgot_password_token_expiry"),
+	is_verified: boolean("is_verified"),
 });
 export const tasks = mysqlTable("tasks", {
 	id: int("id").autoincrement().primaryKey().notNull(),

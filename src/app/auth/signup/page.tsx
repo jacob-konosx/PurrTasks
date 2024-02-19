@@ -1,10 +1,24 @@
 "use client";
+import { useMutation } from "@tanstack/react-query";
 import { NextPage } from "next";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEventHandler, useEffect, useState } from "react";
 import toast from "react-simple-toasts";
+import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/success.css";
+
+const createUser = async (userData: any): Promise<any> => {
+	const res = await fetch(`/api/auth/signup`, {
+		method: "POST",
+		body: JSON.stringify(userData),
+	});
+	if (!res.ok) {
+		throw new Error("Failed to create user");
+	}
+	return res.json();
+};
 
 const page: NextPage = (): JSX.Element => {
 	const [userData, setUserData] = useState({
@@ -14,6 +28,18 @@ const page: NextPage = (): JSX.Element => {
 		password: "",
 	});
 	const { data: session } = useSession();
+	const { push } = useRouter();
+
+	const { mutate, isPending, isSuccess } = useMutation({
+		mutationFn: createUser,
+		onSuccess: () => {
+			toast("Verify email to sign in!", { theme: "success" });
+			push("/auth/signin");
+		},
+		onError: () => {
+			toast("Error creating user!", { theme: "failure" });
+		},
+	});
 
 	useEffect(() => {
 		if (session) {
@@ -42,19 +68,13 @@ const page: NextPage = (): JSX.Element => {
 			});
 			return;
 		}
-		const res = await signIn("signUp", {
-			redirect: false,
-			firstName: userData.firstName,
-			lastName: userData.lastName,
-			email: userData.email,
-			password: userData.password,
-		});
-		if (!res?.ok) {
-			toast(res?.error, { theme: "failure" });
-		} else {
-			toast("Sign-up Successful!", { theme: "success" });
-		}
+		mutate(userData);
 	};
+	if (isPending || isSuccess) {
+		return (
+			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
+		);
+	}
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
 			<label

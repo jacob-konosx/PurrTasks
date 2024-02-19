@@ -21,7 +21,10 @@ const editTask = async ({
 }): Promise<any> => {
 	const res = await fetch(`/api/tasks/${task_id}`, {
 		method: "PATCH",
-		body: JSON.stringify(task_data),
+		body: JSON.stringify({
+			...task_data,
+			tags: task_data.tags.toString(),
+		}),
 	});
 	if (!res.ok) {
 		throw new Error("Failed to edit task");
