@@ -13,8 +13,9 @@ const verifyUser = async (token: String): Promise<any> => {
 		method: "POST",
 		body: JSON.stringify({ token }),
 	});
-	console.log(res);
+	const jsonRes = await res.json();
 	if (!res.ok) {
+		toast(`${jsonRes.message}`, { theme: "failure" });
 		throw new Error("Failed to verify user");
 	}
 	return res.json();
@@ -30,7 +31,6 @@ const page: NextPage = (): JSX.Element => {
 			push("/auth/signin");
 		},
 		onError: () => {
-			toast("Couldn't verify user!", { theme: "failure" });
 			push("/auth/signin");
 		},
 	});
