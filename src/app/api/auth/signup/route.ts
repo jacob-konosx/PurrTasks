@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
 	};
 
 	try {
+		// REVIEW: I would name this existingUser instead of oldUser for more clarity
 		const oldUser = await db.query.users.findFirst({
 			where: eq(users.email, email),
 		});

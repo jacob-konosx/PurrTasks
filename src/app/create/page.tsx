@@ -21,11 +21,12 @@ const createTask = async (taskData: TaskData) => {
 	}
 	return res.json();
 };
+
 const page: NextPage = (): JSX.Element => {
 	const { data: session } = useSession();
 	const { push } = useRouter();
 	const [taskData, setTaskData] = useState<TaskData>({
-		user_id: 0,
+		user_id: 0, // REVIEW: You can set the user data immediately: session?.user.id ?? 0
 		text: "",
 		tags: [],
 		title: "",
@@ -43,6 +44,7 @@ const page: NextPage = (): JSX.Element => {
 		},
 	});
 
+	// REVIEW: https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state
 	useEffect(() => {
 		if (session) {
 			setTaskData({ ...taskData, user_id: session.user.id });

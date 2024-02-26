@@ -12,3 +12,12 @@ Visit the website here: https://todo.konosx.dev/
 - TailWind
 - DaisyUI
 - Planetscale(MySQL - Drizzle ORM)
+
+## Kristiāns Review that did not fit in specific files
+- Missing README and how to setup the project, what env variables are needed
+- Would recommend using PNPM instead of NPM, saves you space on the PC
+- App should only contain routes/components specific to those routes, lib/overall components should be outside
+- Components are too far away from where they are used at places
+- Prefer function over const syntax 
+- Inconsistent variable naming patterns
+  

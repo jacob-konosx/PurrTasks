@@ -8,6 +8,7 @@ interface TaskProps {
 }
 
 const TaskCard: NextPage<TaskProps> = (props): JSX.Element => {
+	// REVIEW: can destructure immediately in the function definition, instead of doing it in a separate line here
 	const { task } = props;
 	const date = moment.utc(task.end_date).local().format("hh:mm a DD.MM.YYYY");
 	const tags: string[] = task.tags.split(",");

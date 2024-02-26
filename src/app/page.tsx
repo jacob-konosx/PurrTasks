@@ -2,6 +2,10 @@
 import { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+/** REVIEW:
+ * you should avoid using relative imports, instead using absolute imports from the root, like from src 
+ * Absolute imports would make this be like @/app/api/schema, you can check tutorials on how to enable this in NextJS/Typescript
+*/
 import { Task } from "./api/schema";
 import TaskCard from "./components/TaskCard";
 import TaskSettings from "./components/TaskSettings";
@@ -15,6 +19,7 @@ const fetchTasks = (): Promise<Task[]> =>
 		return res.json();
 	})
 
+/** REVIEW: I would recommend using the export default function Home() syntax as it is simpler and does not require another export at the bottom */
 const Home: NextPage = (): JSX.Element => {
 	const { push } = useRouter();
 	const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);

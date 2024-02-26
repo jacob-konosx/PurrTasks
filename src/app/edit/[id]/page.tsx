@@ -9,11 +9,14 @@ import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
 import { useMutation } from "@tanstack/react-query";
+
+// REVIEW: add more newlines after imports and definitions for clearer readability
 interface TaskPageParams {
 	params: { id: string };
 }
+
 const editTask = async ({
-	task_id,
+	task_id, // REVIEW: reminder about not using snake case for variable names if you use camelCase everywhere else
 	task_data,
 }: {
 	task_id: string;
@@ -37,6 +40,7 @@ const page: NextPage<TaskPageParams> = ({
 }: TaskPageParams): JSX.Element => {
 	const { push } = useRouter();
 	const [isLoading, setLoading] = useState(true);
+	// REVIEW: this default TaskData worries me - I would recommend just setting it to undefined if ther edefault is not present yet
 	const [taskData, setTaskData] = useState<TaskData>({
 		user_id: 0,
 		text: "",
@@ -79,6 +83,7 @@ const page: NextPage<TaskPageParams> = ({
 			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
 		);
 
+	// REVIEW: I may be missing it, but I do not see anywhere this can be set to be undefined?
 	if (!taskData) return <p className="text-center mt-24">Task not found!</p>;
 
 	const handleUpdate = async (e: any) => {

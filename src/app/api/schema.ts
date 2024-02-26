@@ -6,6 +6,9 @@ import {
 	mysqlTable,
 	varchar,
 } from "drizzle-orm/mysql-core";
+
+// REVIEW: you should use camelCase names for the variables, instead of snake_case for JS (the actual table names can be in snake case though) to keep consistency
+
 // declaring enum in database
 export const users = mysqlTable("users", {
 	id: int("id").autoincrement().primaryKey().notNull(),
@@ -25,7 +28,7 @@ export const users = mysqlTable("users", {
 export const tasks = mysqlTable("tasks", {
 	id: int("id").autoincrement().primaryKey().notNull(),
 	user_id: int("user_id").notNull(),
-	text: varchar("text", { length: 256 }).notNull(),
+	text: varchar("text", { length: 256 }).notNull(), // REVIEW: should the Task have a limited text size? If so, do you limit it in the UI? You can use text() for an unlimited length text
 	tags: varchar("tags", { length: 256 }).notNull(),
 	title: varchar("title", { length: 256 }).notNull(),
 	img_url: varchar("img_url", { length: 256 }).notNull(),

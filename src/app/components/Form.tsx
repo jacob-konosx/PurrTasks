@@ -8,6 +8,7 @@ import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 
+// REVIEW: should the Form component export an addMins function? I think this makes more sense in /lib
 export function addMins(date: Date, minutes: number) {
 	date.setMinutes(date.getMinutes() + minutes);
 	return date;
@@ -31,6 +32,7 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 	const [tagInput, setTagInput] = useState("");
 	const { taskData, setTaskData, handleSubmit, buttonText } = props;
 
+	// REVIEW: I would personally add newlines between these definitions
 	const addTaskTag = (e: any) => {
 		e.preventDefault();
 		if (tagInput === "" || tagInput.includes(",")) {
@@ -47,12 +49,15 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 			tags: taskData.tags.filter((tag, i) => i !== index),
 		});
 	};
+	// REVIEW: would rename to "isTimeInTheFuture"
 	const filterPassedTime = (time: Date) => {
 		const currentDate = new Date();
 		const selectedDate = new Date(time);
 
 		return currentDate.getTime() < selectedDate.getTime();
 	};
+
+	// REVIEW: I would define a JSX element outside of the component, not inside of another component
 	const CustomDateInput = forwardRef(({ value, onClick }: any, ref: any) => (
 		<>
 			<p className="text-center mb-1">
@@ -70,11 +75,13 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 			</button>
 		</>
 	));
+
 	return (
 		<form
 			className="grid place-items-center mt-24 px-4 pb-20"
 			onSubmit={handleSubmit}
 		>
+			{/* REVIEW: label should not be used here, instead it should be a generic div, and the label tag should be used where you styled with the className label */}
 			<label htmlFor="title" className="form-control w-full max-w-xs">
 				<div className="w-full">
 					{taskData.img_url && (
@@ -87,6 +94,7 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 						/>
 					)}
 				</div>
+				{/* REVIEW: this should be a label element */}
 				<div className="label">
 					<span className="label-text">Title</span>
 				</div>
@@ -114,6 +122,10 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 					className="textarea textarea-bordered w-full max-w-xs"
 					value={taskData.text}
 					onChange={(e) =>
+						/** REVIEW: 
+						 * this is really, really, really inefficient! You should have the description as a separate state, because everytime you do ...taskData, you allocate another object in memory to do so
+						 * when it is only one object being changed, this is fine, but doing this with something more massive like a long list can cause performance problems due to allocating too much memory
+						*/
 						setTaskData({ ...taskData, text: e.target.value })
 					}
 				/>
@@ -142,6 +154,7 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 				{taskData.tags.length !== 0 && (
 					<div className="mt-2">
 						Tags:{" "}
+						{/* REVIEW: tag does not need a type annotation, can just type tag instead of tag: string */}
 						{taskData.tags.map((tag: string, index) => {
 							const isLastTag =
 								index === taskData.tags.length - 1;
@@ -159,6 +172,7 @@ const Form: NextPage<FormProps> = (props): JSX.Element => {
 					</div>
 				)}
 			</label>
+			{/* REVIEW: same as previously, but I think you can replace the inner div with the label and remove this extra element all together */}
 			<label htmlFor="end_date" className="form-control w-full max-w-xs">
 				<div className="label">
 					<span className="label-text">End Date</span>

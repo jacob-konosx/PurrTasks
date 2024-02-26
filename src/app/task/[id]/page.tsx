@@ -7,21 +7,31 @@ import { useEffect, useState } from "react";
 import CompleteButton from "../../components/CompleteButton";
 import DeleteButton from "../../components/DeleteButton";
 
+// REVIEW: this is not bad, but you can inline this in the function definition, like:
+/**
+ * export default function Task({ params }: { params: { id: string }})
+ */
 interface TaskPageParams {
 	params: { id: string };
 }
 
+/** REVIEW
+ * Inconsistent page naming, in here and others, you name it "page", but in root page, it is "Home", specific to what it is
+ * Choose one or the other (ideally specific to the page, like Task)
+ */
 const page: NextPage<TaskPageParams> = ({
 	params,
 }: TaskPageParams): JSX.Element => {
 	const [userTasks, setUserTasks] = useState<Task[]>([]);
 	const [isLoading, setLoading] = useState(true);
 
+	// REVIEW: is there anything that prevents you from immediately reading this?
 	useEffect(() => {
 		setUserTasks(JSON.parse(localStorage.getItem("userTasks") || "[]"));
 		setLoading(false);
 	}, []);
 
+	// REVIEW: this is called on every re-render, which can have a performance problem, though with the new React compiler soonTM, it should hopefully automatically memoize this
 	const task: Task | undefined = userTasks.find(
 		(task: Task) => task.id === parseInt(params.id)
 	);
@@ -33,6 +43,7 @@ const page: NextPage<TaskPageParams> = ({
 
 	if (!task) return <p className="text-center mt-24">Task not found!</p>;
 
+	// REVIEW: momentjs is deprecated, use dayjs (or Temporal API when browsers finally support it reee)
 	const date = moment.utc(task.end_date).local().format("HH:mm DD.MM.YYYY ");
 	const tags: string[] = task.tags.split(",");
 	const status = task.finished_at
@@ -59,6 +70,7 @@ const page: NextPage<TaskPageParams> = ({
 				<p>{task.text}</p>
 				<div className="relative">
 					Tags:{" "}
+					{/* REVIEW: you can skip the type definition for tag, just write tag instead of tag: string */}
 					{tags.map((tag: string, index) => (
 						<div className="badge badge-base mr-2" key={index}>
 							{tag}
@@ -83,4 +95,5 @@ const page: NextPage<TaskPageParams> = ({
 		</div>
 	);
 };
+
 export default page;

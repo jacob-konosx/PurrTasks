@@ -8,6 +8,7 @@ import { tasks } from "../schema";
 export async function GET(request: NextRequest) {
 	const session = await getServerSession(authOptions);
 	if (!session) {
+		// REVIEW: Unauthorized is misspelled
 		return new NextResponse(JSON.stringify({ error: "Unauthorizedd" }), {
 			status: 401,
 		});
@@ -15,6 +16,8 @@ export async function GET(request: NextRequest) {
 
 	const user_id = session.user.id;
 	try {
+		// REVIEW: you can make DB calls in the API route, but I would highly suggest to move them to a function and have a separate /data folder to keep all your calls in one place
+		// https://nextjs.org/blog/security-nextjs-server-components-actions#data-access-layer
 		const user_tasks = await db
 			.select()
 			.from(tasks)
@@ -35,6 +38,7 @@ export async function GET(request: NextRequest) {
 }
 export async function POST(request: NextRequest) {
 	const session = await getServerSession(authOptions);
+	// REVIEW: I suggest after guard statements (ifs that immediately return from a function early) to add a newline after
 	if (!session) {
 		return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
 			status: 401,

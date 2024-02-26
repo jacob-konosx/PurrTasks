@@ -22,6 +22,7 @@ const page: NextPage = (): JSX.Element => {
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
+		// REVIEW: I am pretty sure this is the same logic as in signup for verifying e-mail, you should extract it into a shared function
 		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 		if (userData.email === "") {
 			toast("Email cannot be empty!", { theme: "warning" });

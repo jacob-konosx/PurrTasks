@@ -4,7 +4,7 @@ import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "../api/db";
 import { users } from "../api/schema";
-import { sendEmail } from "./mailer";
+import { sendEmail } from "./mailer"; // REVIEW: unused import
 
 export const authOptions: NextAuthOptions = {
 	callbacks: {
@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
 			},
 		}),
 	],
+	// REVIEW: do not leave commented out code in the project, add a comment if it is necessary to keep and why
 	pages: {
 		signIn: "/auth/signin",
 		// signOut: "/auth/signout",

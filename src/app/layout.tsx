@@ -24,7 +24,8 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en" data-theme="dark" className="h-[100%]">
+		<html lang="en" data-theme="dark" className="h-full">
+			{/* REVIEW: h-[100%] could be h-full, other is that I would not recommend doing that, if you want to achieve a screen height, you should do it in body with min-h-lvh */}
 			<head>
 				<meta charSet="utf-8" />
 				<meta
@@ -32,11 +33,12 @@ export default function RootLayout({
 					content="initial-scale=1.0, width=device-width"
 				/>
 			</head>
+			{/* REVIEW: literally every class on this elment is wrong except the inter classname*/}
 			<body className={`${inter.className} p-0 h-auto]`}>
 				<NextAuthProvider>
 					<ReactQueryProvider>
 						<NavBar />
-						<main className="h-full pb-1">{children}</main>
+						<main className="h-full pb-1 min">{children}</main>
 						<Footer />
 					</ReactQueryProvider>
 				</NextAuthProvider>

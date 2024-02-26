@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../db";
 import { tasks } from "../../schema";
 
+// REVIEW: you monster with that any
+// REVIEW: PUT/PATCH are ambigious, I would make this a separate route specifying that this route is meant only to change the finished date
 export async function PUT(request: NextRequest, context: any) {
 	const session = await getServerSession(authOptions);
 	if (!session) {
@@ -12,6 +14,7 @@ export async function PUT(request: NextRequest, context: any) {
 			status: 401,
 		});
 	}
+	// REVIEW: I think userId is a better name than the session ID, as you can confuse the both
 	const session_id = session.user.id;
 
 	const body = await request.json();
@@ -41,6 +44,8 @@ export async function PUT(request: NextRequest, context: any) {
 		);
 	}
 }
+
+// REVIEW: you monster with that any
 export async function DELETE(request: NextRequest, context: any) {
 	const session = await getServerSession(authOptions);
 	if (!session) {

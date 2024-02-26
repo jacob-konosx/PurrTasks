@@ -43,6 +43,7 @@ const page: NextPage = (): JSX.Element => {
 
 	useEffect(() => {
 		if (session) {
+			// REVIEW: why are you setting the window location directly now? You can use a push from the router to avoid this, or, look how NextJS can handle auth redirects directly from the server, instead of here
 			window.location.href = "/";
 		}
 	}, [session]);
@@ -77,6 +78,8 @@ const page: NextPage = (): JSX.Element => {
 	}
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
+			{/* REVIEW: same here as it was elsewhere for labels: use them only on the label, not as a parent element containing everything, you can use a generic div for that*/}
+			{/* REVIEW: From a UX standpoint, you should have form fields indicate that they are in an error state and change their CSS */}
 			<label
 				htmlFor="first_name"
 				className="form-control w-full max-w-xs"
