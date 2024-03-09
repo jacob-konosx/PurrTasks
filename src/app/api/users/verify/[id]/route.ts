@@ -17,7 +17,7 @@ export async function PUT(request: NextRequest, context: any) {
 			.update(users)
 			.set({
 				verify_token,
-				verify_token_expiry: new Date(verify_token_expiry),
+				verify_token_expiry,
 			})
 			.where(eq(users.id, user_id));
 
@@ -39,4 +39,3 @@ export async function PUT(request: NextRequest, context: any) {
 		);
 	}
 }
-

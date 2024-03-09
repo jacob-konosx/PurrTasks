@@ -21,7 +21,7 @@ export async function PUT(request: NextRequest, context: any) {
 	try {
 		await db
 			.update(tasks)
-			.set({ finished_at: new Date(finished_at) })
+			.set({ finished_at })
 			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));
 		return new NextResponse(
 			JSON.stringify({ message: `Task Finished Successfully` }),
@@ -134,7 +134,7 @@ export async function PATCH(request: NextRequest, context: any) {
 				title,
 				text,
 				tags,
-				end_date: new Date(end_date),
+				end_date,
 			})
 			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));
 		return new NextResponse(

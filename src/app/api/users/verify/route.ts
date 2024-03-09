@@ -15,17 +15,22 @@ export async function POST(request: NextRequest, context: any) {
 		const user = await db.query.users.findFirst({
 			where: and(
 				eq(users.verify_token, token),
-				gt(users.verify_token_expiry, new Date())
+				// gt(users.verify_token_expiry, new Date())
 			),
 		});
-        if (!user) {
-            return new NextResponse(
-                JSON.stringify({ message: `Token Expired or Invalid` }),
-                {
-                    status: 401,
-                }
-            );
-        }
+
+		const isValidToken =
+			user &&
+			user.verify_token_expiry &&
+			new Date(user.verify_token_expiry) > new Date(Date.now());
+		if (!isValidToken) {
+			return new NextResponse(
+				JSON.stringify({ message: `Token Expired or Invalid` }),
+				{
+					status: 401,
+				}
+			);
+		}
         if (user.is_verified) {
             return new NextResponse(
                 JSON.stringify({ message: `User Already Verified` }),
@@ -42,10 +47,7 @@ export async function POST(request: NextRequest, context: any) {
 				verify_token_expiry: null,
 			})
 			.where(
-				and(
 					eq(users.verify_token, token),
-					gt(users.verify_token_expiry, new Date())
-				)
 			);
 		return new NextResponse(
 			JSON.stringify({ message: `User Verified Successfully` }),

@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 			text,
 			img_url,
 			tags: tags.toString(),
-			end_date: new Date(end_date),
+			end_date,
 		});
 		return new NextResponse(
 			JSON.stringify({ message: `Task Created Successfully` }),
