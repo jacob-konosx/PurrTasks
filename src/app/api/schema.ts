@@ -1,43 +1,41 @@
 import { sql } from "drizzle-orm";
-import {
-	boolean,
-	datetime,
-	int,
-	mysqlTable,
-	varchar,
-} from "drizzle-orm/mysql-core";
 
 // REVIEW: you should use camelCase names for the variables, instead of snake_case for JS (the actual table names can be in snake case though) to keep consistency
+import { text, integer, sqliteTable } from "drizzle-orm/sqlite-core";
 
 // declaring enum in database
-export const users = mysqlTable("users", {
-	id: int("id").autoincrement().primaryKey().notNull(),
-	first_name: varchar("first_name", { length: 256 }).notNull(),
-	last_name: varchar("last_name", { length: 256 }).notNull(),
-	email: varchar("email", { length: 256 }).notNull(),
-	password: varchar("password", { length: 256 }).notNull(),
-	created_at: datetime("created_at")
+export const users = sqliteTable("users", {
+	id: integer("id").primaryKey().notNull(),
+	first_name: text("first_name").notNull(),
+	last_name: text("last_name").notNull(),
+	email: text("email").notNull(),
+	password: text("password").notNull(),
+	created_at: text("created_at")
 		.default(sql`CURRENT_TIMESTAMP`)
 		.notNull(),
-	forgot_password_token: varchar("forgot_password_token", { length: 256 }),
-	verify_token: varchar("verify_token", { length: 256 }),
-	verify_token_expiry: datetime("verify_token_expiry"),
-	forgot_password_token_expiry: datetime("forgot_password_token_expiry"),
-	is_verified: boolean("is_verified"),
+	forgot_password_token: text("forgot_password_token"),
+	verify_token: text("verify_token"),
+	verify_token_expiry: text("verify_token_expiry"),
+	forgot_password_token_expiry: text("forgot_password_token_expiry"),
+	is_verified: integer("is_verified", { mode: "boolean" })
+		.default(sql`FALSE`)
+		.notNull(),
 });
-export const tasks = mysqlTable("tasks", {
-	id: int("id").autoincrement().primaryKey().notNull(),
-	user_id: int("user_id").notNull(),
-	text: varchar("text", { length: 256 }).notNull(), // REVIEW: should the Task have a limited text size? If so, do you limit it in the UI? You can use text() for an unlimited length text
-	tags: varchar("tags", { length: 256 }).notNull(),
-	title: varchar("title", { length: 256 }).notNull(),
-	img_url: varchar("img_url", { length: 256 }).notNull(),
-	created_at: datetime("created_at")
+
+export const tasks = sqliteTable("tasks", {
+	id: integer("id").primaryKey().notNull(),
+	user_id: integer("user_id").notNull(),
+	text: text("text").notNull(),
+	tags: text("tags").notNull(),
+	title: text("title").notNull(),
+	img_url: text("img_url").notNull(),
+	created_at: text("created_at")
 		.default(sql`CURRENT_TIMESTAMP`)
 		.notNull(),
-	end_date: datetime("end_date").notNull(),
-	finished_at: datetime("finished_at"),
+	end_date: text("end_date").notNull(),
+	finished_at: text("finished_at"),
 });
+
 export type User = typeof users.$inferSelect; // return type when queried
 export type NewUser = typeof users.$inferInsert; // insert type
 export type Task = typeof tasks.$inferSelect; // return type when queried

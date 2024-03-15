@@ -1,14 +1,10 @@
-import { connect } from "@planetscale/database";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
 import * as schema from "./schema";
 
-// REVIEW: redundant comment
-// create the connection
-const connection = connect({
-	host: process.env.DATABASE_HOST,
-	username: process.env.DATABASE_USERNAME,
-	password: process.env.DATABASE_PASSWORD,
+const client = createClient({
+	url: process.env.TURSO_DB_URL as string,
+	authToken: process.env.TURSO_DB_TOKEN,
 });
 
-// REVIEW: I highly suggest using newlines between imports, exports, and function/constant definitions
-export const db = drizzle(connection, { schema });
+export const db = drizzle(client, { schema });
