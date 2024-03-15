@@ -3,6 +3,7 @@ import { db } from "../../db";
 import { users } from "../../schema";
 import { and, eq, gt } from "drizzle-orm";
 
+/** REVIEW: you use another any, you will have regret cast upon thee */
 export async function POST(request: NextRequest, context: any) {
 
 	const body = await request.json();

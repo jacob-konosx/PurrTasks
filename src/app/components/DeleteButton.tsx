@@ -37,10 +37,11 @@ const DeleteButton: NextPage<DeleteButtonProps> = (props): JSX.Element => {
 		e.preventDefault();
 		mutate(task_id);
 	};
+	
 	return (
 		<button
 			className="btn btn-error btn-sm sm:btn-md"
-			onClick={(e) => handleDelete(e)}
+			onClick={(e) => handleDelete(e)} // you can replace this with: onClick={handleDelete}
 		>
 			DELETE
 		</button>

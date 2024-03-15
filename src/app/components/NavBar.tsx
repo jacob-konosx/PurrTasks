@@ -5,6 +5,8 @@ import { authOptions } from "../lib/auth";
 import LoginBtn from "./LoginBtn";
 import SignOutButton from "./SignOutButton";
 
+// REVIEW: not commenting on every const declaration where you can replace with an inferred function, but remember to do so
+// like: export default async function Navbar()
 const NavBar: NextPage = async (): Promise<JSX.Element> => {
 	const session = await getServerSession(authOptions);
 
@@ -28,7 +30,8 @@ const NavBar: NextPage = async (): Promise<JSX.Element> => {
 			</div>
 			{session ? (
 				<div className="navbar-end">
-					{/* <div className="form-control pr-2">
+					{/* REVIEW: do not leave commented out code
+					<div className="form-control pr-2">
 						<input
 							type="text"
 							placeholder="Search"

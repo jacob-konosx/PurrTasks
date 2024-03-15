@@ -2,6 +2,7 @@ export { default } from "next-auth/middleware";
 
 export const config = {
 	matcher: [
+		/* REVIEW: This comment is wrong, and does not include the extra routes, it should be removed */
 		/*
 		 * Match all request paths except for the ones starting with:
 		 * - api (API routes)

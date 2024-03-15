@@ -1,4 +1,6 @@
 import { sql } from "drizzle-orm";
+
+// REVIEW: you should use camelCase names for the variables, instead of snake_case for JS (the actual table names can be in snake case though) to keep consistency
 import { text, integer, sqliteTable } from "drizzle-orm/sqlite-core";
 
 // declaring enum in database
@@ -19,6 +21,7 @@ export const users = sqliteTable("users", {
 		.default(sql`FALSE`)
 		.notNull(),
 });
+
 export const tasks = sqliteTable("tasks", {
 	id: integer("id").primaryKey().notNull(),
 	user_id: integer("user_id").notNull(),
@@ -32,6 +35,7 @@ export const tasks = sqliteTable("tasks", {
 	end_date: text("end_date").notNull(),
 	finished_at: text("finished_at"),
 });
+
 export type User = typeof users.$inferSelect; // return type when queried
 export type NewUser = typeof users.$inferInsert; // insert type
 export type Task = typeof tasks.$inferSelect; // return type when queried

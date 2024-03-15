@@ -3,6 +3,8 @@ import { NextPage } from "next";
 import React from "react";
 
 const TaskSettings: NextPage = (): JSX.Element => {
+	// REVIEW: why use React.useState here, but useState elsewhere? Keep consistency by using useState everywhere
+	// REVIEW: this logical expression can be simplified to: localStorage.getItem("showCompleted") !== undefined || Boolean(localStorage.getItem("showCompleted"))
 	const [checkedStatus, setCheckedStatus] = React.useState(
 		!localStorage.getItem("showCompleted") ||
 			localStorage.getItem("showCompleted") === "false"
@@ -14,6 +16,7 @@ const TaskSettings: NextPage = (): JSX.Element => {
 		localStorage.setItem("showCompleted", String(!checkedStatus));
 		window.dispatchEvent(new Event("storage"));
 	};
+	
 	return (
 		<div className="form-control inline-flex ">
 			<label className="cursor-pointer label">
