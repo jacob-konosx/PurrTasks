@@ -1,84 +1,90 @@
 "use client";
-import { NextPage } from "next";
-import { signIn, useSession } from "next-auth/react";
+
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { FormEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, FormEventHandler, useState } from "react";
 import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
+import {
+	StringKeyObject,
+	signInSchema,
+	validateSchema,
+} from "@/app/lib/validationSchema";
+import FormInput from "@/app/components/FormInput";
+import { useRouter } from "next/navigation";
 
-const page: NextPage = (): JSX.Element => {
-	const { data: session } = useSession();
-	const [userData, setUserData] = useState({
+const inputs = [
+	{
+		id: "email",
+		label: "email",
+		name: "Email",
+		type: "email",
+		placeholder: "Enter email",
+		errorMessage: "Invalid email!",
+	},
+	{
+		id: "password",
+		label: "password",
+		name: "Password",
+		type: "password",
+		placeholder: "Enter password",
+		errorMessage: "Password should be 5-16 characters!",
+		svg: "M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z",
+	},
+];
+
+const validationSuccessFunction = async (userData: StringKeyObject) => {
+	const res = await signIn("credentials", {
+		redirect: false,
+		email: userData.email,
+		password: userData.password,
+	});
+	if (!res?.ok) {
+		toast(res?.error, { theme: "failure" });
+	} else {
+		toast("Sign-in Successful!", { theme: "success" });
+	}
+};
+
+export default function SignIn(): JSX.Element {
+	const { push } = useRouter();
+	const [error, setError] = useState<StringKeyObject>({});
+	const [userData, setUserData] = useState<StringKeyObject>({
 		email: "",
 		password: "",
 	});
-	useEffect(() => {
-		if (session) {
-			window.location.href = "/";
-		}
-	}, [session]);
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		// REVIEW: I am pretty sure this is the same logic as in signup for verifying e-mail, you should extract it into a shared function
-		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-		if (userData.email === "") {
-			toast("Email cannot be empty!", { theme: "warning" });
-			return;
-		} else if (userData.password.length < 6) {
-			toast("Password must be at least 6 characters long!", {
-				theme: "warning",
-			});
-			return;
-		} else if (!emailRegex.test(userData.email)) {
-			toast("Invalid email!", { theme: "warning" });
-			return;
+		const isValidated = await validateSchema(
+			signInSchema,
+			userData,
+			validationSuccessFunction,
+			setError
+		);
+		if (isValidated) {
+			push("/");
 		}
-		const res = await signIn("credentials", {
-			redirect: false,
-			email: userData.email,
-			password: userData.password,
-		});
-		if (!res?.ok) {
-			toast(res?.error, { theme: "failure" });
-		} else {
-			toast("Sign-in Successful!", { theme: "success" });
-		}
+	};
+
+	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setUserData({ ...userData, [e.target.id]: e.target.value });
 	};
 
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
-			<label htmlFor="email" className="form-control w-full max-w-xs">
-				<div className="label">
-					<span className="label-text">Email</span>
-				</div>
-				<input
-					id="email"
-					type="email"
-					placeholder="Enter Email"
-					className="input input-bordered w-full max-w-xs"
-					value={userData.email}
-					onChange={(e) =>
-						setUserData({ ...userData, email: e.target.value })
-					}
-				/>
-			</label>
-			<label htmlFor="password" className="form-control w-full max-w-xs">
-				<div className="label">
-					<span className="label-text">Password</span>
-				</div>
-				<input
-					id="password"
-					type="password"
-					placeholder="Enter Password"
-					className="input input-bordered w-full max-w-xs"
-					value={userData.password}
-					onChange={(e) =>
-						setUserData({ ...userData, password: e.target.value })
-					}
-				/>
+			<div>
+				{inputs.map((input, i) => (
+					<FormInput
+						key={i}
+						{...input}
+						onChange={onChange}
+						value={userData[input.id]}
+						error={error[input.id]}
+					/>
+				))}
 				<div className="label mt-2 mb-4">
 					<span className="label-text-alt">
 						Don't have an account?
@@ -89,10 +95,10 @@ const page: NextPage = (): JSX.Element => {
 						</Link>
 					</span>
 				</div>
-			</label>
-			<button className="btn btn-outline">SIGN IN</button>
+				<button className="btn btn-outline block m-auto">
+					SIGN IN
+				</button>
+			</div>
 		</form>
 	);
-};
-
-export default page;
+}

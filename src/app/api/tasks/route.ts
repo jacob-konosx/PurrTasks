@@ -8,22 +8,21 @@ import { tasks } from "../schema";
 export async function GET(request: NextRequest) {
 	const session = await getServerSession(authOptions);
 	if (!session) {
-		// REVIEW: Unauthorized is misspelled
-		return new NextResponse(JSON.stringify({ error: "Unauthorizedd" }), {
+		return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
 			status: 401,
 		});
 	}
 
-	const user_id = session.user.id;
+	const userId = session.user.id;
 	try {
 		// REVIEW: you can make DB calls in the API route, but I would highly suggest to move them to a function and have a separate /data folder to keep all your calls in one place
 		// https://nextjs.org/blog/security-nextjs-server-components-actions#data-access-layer
-		const user_tasks = await db
+		const userTasks = await db
 			.select()
 			.from(tasks)
-			.where(and(eq(tasks.user_id, user_id)))
-			.orderBy(asc(tasks.end_date));
-		return new NextResponse(JSON.stringify(user_tasks), { status: 200 });
+			.where(and(eq(tasks.userId, userId)))
+			.orderBy(asc(tasks.endDate));
+		return new NextResponse(JSON.stringify(userTasks), { status: 200 });
 	} catch (error) {
 		return new NextResponse(
 			JSON.stringify({
@@ -45,12 +44,12 @@ export async function POST(request: NextRequest) {
 		});
 	}
 	const body = await request.json();
-	const { user_id, title, text, tags, end_date } = body as {
-		user_id: number;
+	const { userId, title, text, tags, endDate } = body as {
+		userId: number;
 		title: string;
 		text: string;
 		tags: string[];
-		end_date: string;
+		endDate: string;
 	};
 
 	try {
@@ -58,14 +57,14 @@ export async function POST(request: NextRequest) {
 			method: "GET",
 		});
 		const img_data = await res.json();
-		const img_url = img_data[0].url;
+		const imgUrl = img_data[0].url;
 		await db.insert(tasks).values({
-			user_id,
+			userId,
 			title,
 			text,
-			img_url,
+			imgUrl,
 			tags: tags.toString(),
-			end_date,
+			endDate,
 		});
 		return new NextResponse(
 			JSON.stringify({ message: `Task Created Successfully` }),

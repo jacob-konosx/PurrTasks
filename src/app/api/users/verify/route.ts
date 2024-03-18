@@ -1,29 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../db";
-import { users } from "../../schema";
-import { and, eq, gt } from "drizzle-orm";
+import { db } from "@/app/api/db";
+import { users } from "@/app/api/schema";
+import { and, eq } from "drizzle-orm";
 
-/** REVIEW: you use another any, you will have regret cast upon thee */
-export async function POST(request: NextRequest, context: any) {
-
+export async function POST(request: NextRequest) {
 	const body = await request.json();
-
 	const { token } = body as {
 		token: string;
 	};
 
 	try {
 		const user = await db.query.users.findFirst({
-			where: and(
-				eq(users.verify_token, token),
-				// gt(users.verify_token_expiry, new Date())
-			),
+			where: and(eq(users.verifyToken, token)),
 		});
 
+		if (!user) {
+			return new NextResponse(
+				JSON.stringify({ message: `User With This Token Not Found` }),
+				{
+					status: 404,
+				}
+			);
+		}
+
+		if (user.isVerified) {
+			return new NextResponse(
+				JSON.stringify({ message: `User Already Verified` }),
+				{
+					status: 401,
+				}
+			);
+		}
+
 		const isValidToken =
-			user &&
-			user.verify_token_expiry &&
-			new Date(user.verify_token_expiry) > new Date(Date.now());
+			new Date(user.verifyTokenExpiry!) > new Date(Date.now());
+
 		if (!isValidToken) {
 			return new NextResponse(
 				JSON.stringify({ message: `Token Expired or Invalid` }),
@@ -32,24 +43,16 @@ export async function POST(request: NextRequest, context: any) {
 				}
 			);
 		}
-        if (user.is_verified) {
-            return new NextResponse(
-                JSON.stringify({ message: `User Already Verified` }),
-                {
-                    status: 401,
-                }
-            );
-        }
-        await db
+
+		await db
 			.update(users)
 			.set({
-				is_verified: true,
-				verify_token: null,
-				verify_token_expiry: null,
+				isVerified: true,
+				verifyToken: null,
+				verifyTokenExpiry: null,
 			})
-			.where(
-					eq(users.verify_token, token),
-			);
+			.where(eq(users.verifyToken, token));
+
 		return new NextResponse(
 			JSON.stringify({ message: `User Verified Successfully` }),
 			{

@@ -1,15 +1,27 @@
-export { default } from "next-auth/middleware";
+import { getToken } from "next-auth/jwt";
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
-export const config = {
-	matcher: [
-		/* REVIEW: This comment is wrong, and does not include the extra routes, it should be removed */
-		/*
-		 * Match all request paths except for the ones starting with:
-		 * - api (API routes)
-		 * - _next/static (static files)
-		 * - _next/image (image optimization files)
-		 * - favicon.ico (favicon file)
-		 */
-		"/((?!api|_next/static|_next/image|favicon.ico|auth/signin|auth/signup|verify/*).*)",
-	],
-};
+export default withAuth(
+	async function middleware(req) {
+		const token = await getToken({ req });
+		const isAuthenticated = !!token;
+
+		const protectedRoutes = ["/auth/signup", "/auth/signin", "/verify"];
+
+		// Protect routes when user is authenticated
+		if (protectedRoutes.includes(req.nextUrl.pathname) && isAuthenticated) {
+			return NextResponse.redirect(new URL("/", req.url));
+		}
+
+		// Protect routes when user is unauthenticated
+		if (!protectedRoutes.includes(req.nextUrl.pathname) && !isAuthenticated) {
+			return NextResponse.redirect(new URL("/auth/signin", req.url));
+		}
+	},
+	{
+		callbacks: {
+			authorized: () => true,
+		},
+	}
+);

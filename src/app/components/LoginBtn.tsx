@@ -1,8 +1,8 @@
-'use client';
-import { NextPage } from 'next';
-import { signIn } from 'next-auth/react';
+"use client";
 
-const LoginBtn: NextPage =  (): JSX.Element => {
+import { signIn } from "next-auth/react";
+
+export default function LoginBtn(): JSX.Element {
 	return (
 		<button
 			onClick={() => {
@@ -13,6 +13,4 @@ const LoginBtn: NextPage =  (): JSX.Element => {
 			SIGN IN
 		</button>
 	);
-};
-
-export default LoginBtn
+}

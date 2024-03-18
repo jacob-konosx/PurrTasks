@@ -1,54 +1,35 @@
 "use client";
-import { Task } from "@/app/api/schema";
-import moment from "moment";
-import { NextPage } from "next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import CompleteButton from "../../components/CompleteButton";
-import DeleteButton from "../../components/DeleteButton";
+import CompleteButton from "@/app/components/CompleteButton";
+import DeleteButton from "@/app/components/DeleteButton";
+import type { Task } from "@/app/api/schema";
+import { useMemo } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
-// REVIEW: this is not bad, but you can inline this in the function definition, like:
-/**
- * export default function Task({ params }: { params: { id: string }})
- */
-interface TaskPageParams {
-	params: { id: string };
-}
+dayjs.extend(utc);
 
-/** REVIEW
- * Inconsistent page naming, in here and others, you name it "page", but in root page, it is "Home", specific to what it is
- * Choose one or the other (ideally specific to the page, like Task)
- */
-const page: NextPage<TaskPageParams> = ({
+export default function Task({
 	params,
-}: TaskPageParams): JSX.Element => {
-	const [userTasks, setUserTasks] = useState<Task[]>([]);
-	const [isLoading, setLoading] = useState(true);
-
-	// REVIEW: is there anything that prevents you from immediately reading this?
-	useEffect(() => {
-		setUserTasks(JSON.parse(localStorage.getItem("userTasks") || "[]"));
-		setLoading(false);
-	}, []);
-
-	// REVIEW: this is called on every re-render, which can have a performance problem, though with the new React compiler soonTM, it should hopefully automatically memoize this
-	const task: Task | undefined = userTasks.find(
-		(task: Task) => task.id === parseInt(params.id)
+}: {
+	params: { id: string };
+}): JSX.Element {
+	const userTasks: Task[] = JSON.parse(
+		localStorage.getItem("userTasks") || "[]"
 	);
 
-	if (isLoading)
-		return (
-			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
-		);
+	const task: Task | undefined = useMemo(
+		() => userTasks.find((task: Task) => task.id === parseInt(params.id)),
+		[params]
+	);
 
 	if (!task) return <p className="text-center mt-24">Task not found!</p>;
 
-	// REVIEW: momentjs is deprecated, use dayjs (or Temporal API when browsers finally support it reee)
-	const date = moment.utc(task.end_date).local().format("HH:mm DD.MM.YYYY ");
+	const date = dayjs.utc(task.endDate).local().format("HH:mm DD.MM.YYYY");
 	const tags: string[] = task.tags.split(",");
-	const status = task.finished_at
+	const status = task.finishedAt
 		? "badge-success"
-		: moment(task.end_date).diff(moment().utc()) < 0
+		: dayjs(task.endDate).diff(dayjs().utc()) < 0
 		? "badge-error"
 		: "badge-primary";
 
@@ -61,7 +42,7 @@ const page: NextPage<TaskPageParams> = ({
 				<img
 					className="block object-cover"
 					//
-					src={task.img_url}
+					src={task.imgUrl}
 					alt="cat"
 				/>
 			</figure>
@@ -70,15 +51,14 @@ const page: NextPage<TaskPageParams> = ({
 				<p>{task.text}</p>
 				<div className="relative">
 					Tags:{" "}
-					{/* REVIEW: you can skip the type definition for tag, just write tag instead of tag: string */}
-					{tags.map((tag: string, index) => (
+					{tags.map((tag, index) => (
 						<div className="badge badge-base mr-2" key={index}>
 							{tag}
 						</div>
 					))}
 				</div>
 				<div className="card-actions justify-end m-auto mt-4 whitespace-nowrap">
-					{!task.finished_at && (
+					{!task.finishedAt && (
 						<>
 							<Link
 								href={`/edit/${task.id}`}
@@ -86,14 +66,12 @@ const page: NextPage<TaskPageParams> = ({
 							>
 								EDIT
 							</Link>
-							<CompleteButton task_id={task.id} />
+							<CompleteButton taskId={task.id} />
 						</>
 					)}
-					<DeleteButton task_id={task.id} />
+					<DeleteButton taskId={task.id} />
 				</div>
 			</div>
 		</div>
 	);
-};
-
-export default page;
+}

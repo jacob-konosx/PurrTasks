@@ -1,22 +1,19 @@
-import moment from "moment";
-import { NextPage } from "next";
 import Link from "next/link";
-import { Task } from "../api/schema";
+import { Task } from "@/app/api/schema";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
-interface TaskProps {
-	task: Task;
-}
+dayjs.extend(utc);
 
-const TaskCard: NextPage<TaskProps> = (props): JSX.Element => {
-	// REVIEW: can destructure immediately in the function definition, instead of doing it in a separate line here
-	const { task } = props;
-	const date = moment.utc(task.end_date).local().format("hh:mm a DD.MM.YYYY");
+export default function TaskCard({ task }: { task: Task }): JSX.Element {
+	const date = dayjs.utc(task.endDate).local().format("HH:mm DD.MM.YYYY");
 	const tags: string[] = task.tags.split(",");
-	const status = task.finished_at
+	const status = task.finishedAt
 		? "badge-success"
-		: moment(task.end_date).diff(moment().utc()) < 0
+		: dayjs(task.endDate).diff(dayjs().utc()) < 0
 		? "badge-error"
 		: "badge-primary";
+
 	return (
 		<div className="card w-80 sm:w-96 bg-base-100 shadow-xl mb-4 m-auto">
 			<div
@@ -30,7 +27,7 @@ const TaskCard: NextPage<TaskProps> = (props): JSX.Element => {
 				<Link href={`/task/${task.id}`}>
 					<img
 						className="w-full block max-w-[385px] max-h-[215px] object-cover"
-						src={task.img_url}
+						src={task.imgUrl}
 						alt="cat"
 					/>
 				</Link>
@@ -42,7 +39,7 @@ const TaskCard: NextPage<TaskProps> = (props): JSX.Element => {
 				<p>{task.text}</p>
 				{tags.length > 0 && (
 					<div className="card-actions justify-end">
-						{tags.map((tag: string, index) => (
+						{tags.map((tag, index) => (
 							<div className="badge badge-outline" key={index}>
 								{tag}
 							</div>
@@ -52,6 +49,4 @@ const TaskCard: NextPage<TaskProps> = (props): JSX.Element => {
 			</div>
 		</div>
 	);
-};
-
-export default TaskCard;
+}

@@ -19,13 +19,13 @@ export async function PUT(request: NextRequest, context: any) {
 
 	const body = await request.json();
 	const task_id = context.params.id;
-	const { finished_at } = body as { finished_at: string };
+	const { finishedAt } = body as { finishedAt: string };
 
 	try {
 		await db
 			.update(tasks)
-			.set({ finished_at })
-			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));
+			.set({ finishedAt })
+			.where(and(eq(tasks.id, task_id), eq(tasks.userId, session_id)));
 		return new NextResponse(
 			JSON.stringify({ message: `Task Finished Successfully` }),
 			{
@@ -59,7 +59,7 @@ export async function DELETE(request: NextRequest, context: any) {
 	try {
 		await db
 			.delete(tasks)
-			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));
+			.where(and(eq(tasks.id, task_id), eq(tasks.userId, session_id)));
 		return new NextResponse(
 			JSON.stringify({ message: `Task Deleted Successfully` }),
 			{
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest, context: any) {
 
 	try {
 		const user_task = await db.query.tasks.findFirst({
-			where: and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)),
+			where: and(eq(tasks.id, task_id), eq(tasks.userId, session_id)),
 		});
 		if (!user_task) {
 			return new NextResponse(
@@ -126,28 +126,38 @@ export async function PATCH(request: NextRequest, context: any) {
 	const task_id = context.params.id;
 
 	const body = await request.json();
-	const { title, text, tags, end_date } = body as {
+	const { title, text, tags, endDate } = body as {
 		title: string;
 		text: string;
 		tags: string;
-		end_date: string;
+		endDate: string;
 	};
 	try {
-		await db
+		const resp = await db
 			.update(tasks)
 			.set({
 				title,
 				text,
 				tags,
-				end_date,
+				endDate,
 			})
-			.where(and(eq(tasks.id, task_id), eq(tasks.user_id, session_id)));
-		return new NextResponse(
-			JSON.stringify({ message: `Task Edited Successfully` }),
-			{
-				status: 200,
-			}
-		);
+			.where(and(eq(tasks.id, task_id), eq(tasks.userId, session_id)));
+
+		if (resp.rowsAffected) {
+			return new NextResponse(
+				JSON.stringify({ message: `Task Edited Successfully` }),
+				{
+					status: 200,
+				}
+			);
+		} else {
+			return new NextResponse(
+				JSON.stringify({ message: `Task Not Updated` }),
+				{
+					status: 500,
+				}
+			);
+		}
 	} catch (error) {
 		return new NextResponse(
 			JSON.stringify({

@@ -1,9 +1,14 @@
 import { sendEmail } from "@/app/lib/mailer";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../db";
-import { users } from "../../schema";
+import { User, users } from "../../schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+
+const ONE_DAY = 86400000;
 
 export async function POST(request: NextRequest) {
 	const body = await request.json();
@@ -15,12 +20,11 @@ export async function POST(request: NextRequest) {
 	};
 
 	try {
-		// REVIEW: I would name this existingUser instead of oldUser for more clarity
-		const oldUser = await db.query.users.findFirst({
+		const existingUser = await db.query.users.findFirst({
 			where: eq(users.email, email),
 		});
 
-		if (oldUser) {
+		if (existingUser) {
 			return new NextResponse(
 				JSON.stringify({
 					message: "User already exists!",
@@ -33,17 +37,40 @@ export async function POST(request: NextRequest) {
 
 		const hashedPassword = await bcrypt.hash(password, 12);
 
-		await db.insert(users).values({
-			first_name: firstName,
-			last_name: lastName,
-			email,
-			password: hashedPassword,
-		});
+		const returningUser = await db
+			.insert(users)
+			.values({
+				firstName: firstName,
+				lastName: lastName,
+				email,
+				password: hashedPassword,
+			})
+			.returning();
+		const newUser: User = returningUser[0];
 
-		const newUser = await db.query.users.findFirst({
-			where: eq(users.email, email),
-		});
-		await sendEmail(email, "VERIFY", newUser!.id);
+		if (!newUser) {
+			return new NextResponse(
+				JSON.stringify({
+					message: "Created user but couldn't return user!",
+				}),
+				{
+					status: 409,
+				}
+			);
+		}
+
+		const verifyToken = await bcrypt.hash(newUser.id.toString(), 10);
+
+		await db
+			.update(users)
+			.set({
+				verifyToken,
+				verifyTokenExpiry: dayjs.utc(new Date(Date.now() + ONE_DAY)).format(
+					"YYYY-MM-DD HH:mm:ss"
+				),
+			})
+			.where(eq(users.id, newUser.id));
+		await sendEmail(newUser.email, "VERIFY", verifyToken);
 
 		return new NextResponse(
 			JSON.stringify({ message: "User created successfully!" }),
@@ -53,7 +80,7 @@ export async function POST(request: NextRequest) {
 		console.error(error);
 		return new NextResponse(
 			JSON.stringify({
-				message: "Couldn't get create user",
+				message: "Couldn't create user",
 				error,
 			}),
 			{

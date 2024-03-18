@@ -2,9 +2,8 @@ import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { db } from "../api/db";
-import { users } from "../api/schema";
-import { sendEmail } from "./mailer"; // REVIEW: unused import
+import { db } from "@/app/api/db";
+import { users } from "@/app/api/schema";
 
 export const authOptions: NextAuthOptions = {
 	callbacks: {
@@ -51,13 +50,18 @@ export const authOptions: NextAuthOptions = {
 				if (!user) {
 					throw new Error("User with this email doesn't exist!");
 				}
-				if (!user.is_verified) {
-					throw new Error("User not verified! Verify your email to login.");
+
+				if (!user.isVerified) {
+					throw new Error(
+						"User not verified! Verify your email to login."
+					);
 				}
+
 				const isPasswordCorrect = await bcrypt.compare(
 					password,
 					user.password
 				);
+
 				if (!isPasswordCorrect) {
 					throw new Error("Invalid credentials!");
 				}
@@ -65,13 +69,9 @@ export const authOptions: NextAuthOptions = {
 			},
 		}),
 	],
-	// REVIEW: do not leave commented out code in the project, add a comment if it is necessary to keep and why
+
 	pages: {
 		signIn: "/auth/signin",
-		// signOut: "/auth/signout",
-		// error: "/auth/error",
-		// verifyRequest: "/auth/verify-request",
-		// newUser: "/auth/new-user",
 	},
 	secret: process.env.NEXTAUTH_SECRET,
 };
