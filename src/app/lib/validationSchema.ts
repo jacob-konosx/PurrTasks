@@ -50,5 +50,6 @@ export const validateSchema = async (
 			newError[err.path!] = err.message;
 		});
 		setError(newError);
+		return false
 	}
 };

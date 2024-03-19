@@ -8,7 +8,7 @@ import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/success.css";
 
 const verifyUser = async (token: String) => {
-	const res = await fetch(`/api/users/verify/`, {
+	const res = await fetch(`/api/users/verify`, {
 		method: "POST",
 		body: JSON.stringify({ token }),
 	});
@@ -16,6 +16,7 @@ const verifyUser = async (token: String) => {
 	if (!res.ok) {
 		throw new Error("Failed to verify user");
 	}
+	console.log(res)
 };
 
 export default function Verify(): JSX.Element {
@@ -34,7 +35,6 @@ export default function Verify(): JSX.Element {
 		},
 	});
 
-	// REVIEW: this can run multiple times, though there should not be a bug here due to it just verifying
 	useEffect(() => {
 		if (token) {
 			mutate(token);

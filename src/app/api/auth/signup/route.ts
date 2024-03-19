@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
 		const newUser: User = returningUser[0];
 
 		if (!newUser) {
-			return new NextResponse(
-				JSON.stringify({
+			return NextResponse.json(
+				{
 					message: "Created user but couldn't return user!",
-				}),
+				},
 				{
 					status: 409,
 				}

@@ -69,10 +69,12 @@ export default function Form({
 		if (taskData.title === "") {
 			toast("Title cannot be empty!", { theme: "warning" });
 			return;
-		} else if (taskData.text === "") {
+		}
+		if (taskData.text === "") {
 			toast("Description cannot be empty!", { theme: "warning" });
 			return;
-		} else if (taskData.text.length > 70) {
+		}
+		if (taskData.text.length > 70) {
 			toast(
 				`Title too long! (${taskData.text.length - 70} chars too many)`,
 				{
@@ -80,10 +82,12 @@ export default function Form({
 				}
 			);
 			return;
-		} else if (taskData.tags.length === 0) {
+		}
+		if (taskData.tags.length === 0) {
 			toast("Tags cannot be empty!", { theme: "warning" });
 			return;
-		} else if (taskData.tags.length > 5) {
+		}
+		if (taskData.tags.length > 5) {
 			toast("Cannot have more then 5 tags!", { theme: "warning" });
 			return;
 		}
@@ -129,10 +133,6 @@ export default function Form({
 					className="textarea textarea-bordered w-full max-w-xs"
 					value={taskData.text}
 					onChange={(e) =>
-						/** REVIEW:
-						 * this is really, really, really inefficient! You should have the description as a separate state, because everytime you do ...taskData, you allocate another object in memory to do so
-						 * when it is only one object being changed, this is fine, but doing this with something more massive like a long list can cause performance problems due to allocating too much memory
-						 */
 						setTaskData({ ...taskData, text: e.target.value })
 					}
 				/>
