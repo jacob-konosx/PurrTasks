@@ -3,18 +3,18 @@ import { ChangeEvent, FocusEvent, useState } from "react";
 export default function FormInput({
 	label,
 	name,
-	errorMessage,
 	onChange,
 	value,
 	error,
+	svg,
 	...inputProps
 }: {
 	label: string;
 	name: string;
-	errorMessage: string;
 	value: string;
 	error: string;
 	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+	svg: string;
 }): JSX.Element {
 	return (
 		<div className="form-control w-full">
@@ -45,7 +45,7 @@ export default function FormInput({
 					) : (
 						<path
 							fillRule="evenodd"
-							d={inputProps.svg}
+							d={svg}
 							clipRule="evenodd"
 						/>
 					)}
