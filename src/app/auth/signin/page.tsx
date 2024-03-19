@@ -83,6 +83,7 @@ export default function SignIn(): JSX.Element {
 						onChange={onChange}
 						value={userData[input.id]}
 						error={error[input.id]}
+						svg={input.svg!}
 					/>
 				))}
 				<div className="label mt-2 mb-4">
