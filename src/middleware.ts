@@ -7,7 +7,12 @@ export default withAuth(
 		const token = await getToken({ req });
 		const isAuthenticated = !!token;
 
-		const protectedRoutes = ["/auth/signup", "/auth/signin", "/verify", "/api/users/verify"];
+		const protectedRoutes = [
+			"/auth/signup",
+			"/auth/signin",
+			"/verify",
+			"/api/users/verify",
+		];
 
 		// Protect routes when user is authenticated
 		if (protectedRoutes.includes(req.nextUrl.pathname) && isAuthenticated) {
@@ -15,7 +20,10 @@ export default withAuth(
 		}
 
 		// Protect routes when user is unauthenticated
-		if (!protectedRoutes.includes(req.nextUrl.pathname) && !isAuthenticated) {
+		if (
+			!protectedRoutes.includes(req.nextUrl.pathname) &&
+			!isAuthenticated
+		) {
 			return NextResponse.redirect(new URL("/auth/signin", req.url));
 		}
 	},

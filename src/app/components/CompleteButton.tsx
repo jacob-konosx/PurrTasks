@@ -7,8 +7,8 @@ import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/success.css";
 
 const completeTask = async (taskId: number) => {
-	const res = await fetch(`/api/tasks/${taskId}`, {
-		method: "PUT",
+	const res = await fetch(`/api/tasks/complete/${taskId}`, {
+		method: "PATCH",
 		body: JSON.stringify({ finishedAt: new Date() }),
 	});
 	if (!res.ok) {

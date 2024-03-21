@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
 		});
 
 		if (!user) {
-			return new NextResponse(
-				JSON.stringify({ message: `User With This Token Not Found` }),
+			return NextResponse.json(
+				{ message: `User With This Token Not Found` },
 				{
 					status: 404,
 				}
@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
 		}
 
 		if (user.isVerified) {
-			return new NextResponse(
-				JSON.stringify({ message: `User Already Verified` }),
+			return NextResponse.json(
+				{ message: `User Already Verified` },
 				{
 					status: 401,
 				}
@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
 			new Date(user.verifyTokenExpiry!) > new Date(Date.now());
 
 		if (!isValidToken) {
-			return new NextResponse(
-				JSON.stringify({ message: `Token Expired or Invalid` }),
+			return NextResponse.json(
+				{ message: `Token Expired or Invalid` },
 				{
 					status: 401,
 				}
@@ -53,18 +53,18 @@ export async function POST(request: NextRequest) {
 			})
 			.where(eq(users.verifyToken, token));
 
-		return new NextResponse(
-			JSON.stringify({ message: `User Verified Successfully` }),
+		return NextResponse.json(
+			{ message: `User Verified Successfully` },
 			{
 				status: 200,
 			}
 		);
 	} catch (error) {
-		return new NextResponse(
-			JSON.stringify({
+		return NextResponse.json(
+			{
 				message: "Couldn't verify user in database. ",
 				error,
-			}),
+			},
 			{
 				status: 409,
 			}

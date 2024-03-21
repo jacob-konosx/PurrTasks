@@ -1,7 +1,7 @@
 import { sendEmail } from "@/app/lib/mailer";
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../db";
-import { User, users } from "../../schema";
+import { db } from "@/app/api/db";
+import { User, users } from "@/app/api/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import dayjs from "dayjs";
@@ -25,10 +25,10 @@ export async function POST(request: NextRequest) {
 		});
 
 		if (existingUser) {
-			return new NextResponse(
-				JSON.stringify({
-					message: "User already exists!",
-				}),
+			return NextResponse.json(
+				{
+					message: "User Already Exists",
+				},
 				{
 					status: 409,
 				}
@@ -40,18 +40,19 @@ export async function POST(request: NextRequest) {
 		const returningUser = await db
 			.insert(users)
 			.values({
-				firstName: firstName,
-				lastName: lastName,
+				firstName,
+				lastName,
 				email,
 				password: hashedPassword,
 			})
 			.returning();
+
 		const newUser: User = returningUser[0];
 
 		if (!newUser) {
 			return NextResponse.json(
 				{
-					message: "Created user but couldn't return user!",
+					message: "Couldn't create user",
 				},
 				{
 					status: 409,
@@ -59,30 +60,31 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
+		// Create a token to verify the user's email
 		const verifyToken = await bcrypt.hash(newUser.id.toString(), 10);
 
 		await db
 			.update(users)
 			.set({
 				verifyToken,
-				verifyTokenExpiry: dayjs.utc(new Date(Date.now() + ONE_DAY)).format(
-					"YYYY-MM-DD HH:mm:ss"
-				),
+				verifyTokenExpiry: dayjs
+					.utc(new Date(Date.now() + ONE_DAY))
+					.format("YYYY-MM-DD HH:mm:ss"),
 			})
 			.where(eq(users.id, newUser.id));
+
 		await sendEmail(newUser.email, "VERIFY", verifyToken);
 
-		return new NextResponse(
-			JSON.stringify({ message: "User created successfully!" }),
+		return NextResponse.json(
+			{ message: "User created successfully" },
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error(error);
-		return new NextResponse(
-			JSON.stringify({
+		return NextResponse.json(
+			{
 				message: "Couldn't create user",
 				error,
-			}),
+			},
 			{
 				status: 409,
 			}

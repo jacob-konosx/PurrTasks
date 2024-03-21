@@ -11,8 +11,8 @@ import "react-simple-toasts/dist/theme/success.css";
 import { useMutation } from "@tanstack/react-query";
 
 const editTask = async (taskData: TaskData) => {
-	const res = await fetch(`/api/tasks/${taskData.id}`, {
-		method: "PATCH",
+	const res = await fetch(`/api/tasks/edit/${taskData.id}`, {
+		method: "PUT",
 		body: JSON.stringify({
 			...taskData,
 			tags: taskData.tags.toString(),

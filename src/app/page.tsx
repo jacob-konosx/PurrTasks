@@ -7,15 +7,16 @@ import TaskCard from "@/app/components/TaskCard";
 import TaskSettings from "@/app/components/TaskSettings";
 import { useQuery } from "@tanstack/react-query";
 
-const fetchTasks = async (): Promise<Task[]> =>{
+const fetchTasks = async (): Promise<Task[]> => {
 	const res = await fetch(`/api/tasks`);
 
 	if (!res.ok) {
 		throw new Error("Failed to fetch");
 	}
-
+	const data = await res.json();
+	console.log(data);
 	return res.json();
-}
+};
 
 export default function Home(): JSX.Element {
 	const { push } = useRouter();
