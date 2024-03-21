@@ -5,7 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/app/api/db";
 import { tasks } from "@/app/api/schema";
 
-export async function DELETE(context: { params: { id: number } }) {
+export async function DELETE(
+	request: NextRequest,
+	context: { params: { id: number } }
+) {
 	const session = await getServerSession(authOptions);
 	// Middleware ensures that session is not null and that the user is authenticated
 	const userId = session!.user.id;
@@ -35,7 +38,7 @@ export async function DELETE(context: { params: { id: number } }) {
 	}
 }
 
-export async function GET(context: { params: { id: number } }) {
+export async function GET(request: NextRequest, context: { params: { id: number } }) {
 	const session = await getServerSession(authOptions);
 	// Middleware ensures that session is not null and that the user is authenticated
 	const userId = session!.user.id;

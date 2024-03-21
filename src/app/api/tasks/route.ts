@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/app/api/db";
 import { tasks } from "@/app/api/schema";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
 	const session = await getServerSession(authOptions);
 	// Middleware ensures that session is not null and that the user is authenticated
 	const userId = session!.user.id;
