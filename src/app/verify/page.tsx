@@ -16,7 +16,6 @@ const verifyUser = async (token: String) => {
 	if (!res.ok) {
 		throw new Error("Failed to verify user");
 	}
-	console.log(res)
 };
 
 export default function Verify(): JSX.Element {

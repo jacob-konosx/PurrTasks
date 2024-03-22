@@ -14,8 +14,7 @@ const fetchTasks = async (): Promise<Task[]> => {
 		throw new Error("Failed to fetch");
 	}
 	const data = await res.json();
-	console.log(data);
-	return res.json();
+	return data.userTasks;
 };
 
 export default function Home(): JSX.Element {
