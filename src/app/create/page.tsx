@@ -1,15 +1,20 @@
 "use client";
-import { NextPage } from "next";
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { FormEventHandler, useEffect, useState } from "react";
-import Form, { TaskData, addMins } from "../components/Form";
+import { useState } from "react";
+import Form, { TaskData } from "@/app/components/Form";
 import toast from "react-simple-toasts";
+import { useMutation } from "@tanstack/react-query";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
-import { useMutation } from "@tanstack/react-query";
+
+const addMins = (date: Date, minutes: number) =>{
+	date.setMinutes(date.getMinutes() + minutes);
+	return date;
+}
 
 const createTask = async (taskData: TaskData) => {
 	const res = await fetch(`/api/tasks/`, {
@@ -19,18 +24,17 @@ const createTask = async (taskData: TaskData) => {
 	if (!res.ok) {
 		throw new Error("Failed to create task");
 	}
-	return res.json();
 };
 
-const page: NextPage = (): JSX.Element => {
+export default function Create(): JSX.Element{
 	const { data: session } = useSession();
 	const { push } = useRouter();
 	const [taskData, setTaskData] = useState<TaskData>({
-		user_id: 0, // REVIEW: You can set the user data immediately: session?.user.id ?? 0
+		userId: session?.user.id ?? 0,
 		text: "",
 		tags: [],
 		title: "",
-		end_date: addMins(new Date(), 5),
+		endDate: addMins(new Date(), 5),
 	});
 
 	const { mutate } = useMutation({
@@ -39,44 +43,17 @@ const page: NextPage = (): JSX.Element => {
 			toast("Task Created!", { theme: "success" });
 			push("/");
 		},
-		onError: () => {
-			toast("Error creating task!", { theme: "failure" });
+		onError: (error: Error) => {
+			toast(`${error}`, { theme: "failure" });
 		},
 	});
-
-	// REVIEW: https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state
-	useEffect(() => {
-		if (session) {
-			setTaskData({ ...taskData, user_id: session.user.id });
-		}
-	}, [session]);
-
-	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
-		e.preventDefault();
-		if (taskData.title === "") {
-			toast("Title cannot be empty!", { theme: "warning" });
-			return;
-		} else if (taskData.text === "") {
-			toast("Description cannot be empty!", { theme: "warning" });
-			return;
-		} else if (taskData.tags.length === 0) {
-			toast("Tags cannot be empty!", { theme: "warning" });
-			return;
-		} else if (taskData.tags.length > 5) {
-			toast("Tags cannot be more than 5!", { theme: "warning" });
-			return;
-		}
-		mutate(taskData);
-	};
 
 	return (
 		<Form
 			taskData={taskData}
 			setTaskData={setTaskData}
-			handleSubmit={handleSubmit}
+			mutate={mutate}
 			buttonText="CREATE TASK"
 		/>
 	);
 };
-
-export default page;

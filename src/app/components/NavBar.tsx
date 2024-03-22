@@ -1,13 +1,10 @@
-import { NextPage } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { authOptions } from "../lib/auth";
-import LoginBtn from "./LoginBtn";
-import SignOutButton from "./SignOutButton";
+import { authOptions } from "@/lib/auth";
+import LoginBtn from "@/app/components/LoginBtn";
+import SignOutButton from "@/app/components/SignOutButton";
 
-// REVIEW: not commenting on every const declaration where you can replace with an inferred function, but remember to do so
-// like: export default async function Navbar()
-const NavBar: NextPage = async (): Promise<JSX.Element> => {
+export default async function NavBar(): Promise<JSX.Element> {
 	const session = await getServerSession(authOptions);
 
 	return (
@@ -24,20 +21,15 @@ const NavBar: NextPage = async (): Promise<JSX.Element> => {
 				)}
 			</div>
 			<div className="navbar-center block">
-				<Link href="/" className="btn btn-ghost text-lg sm:text-xl lg:text-2xl">
+				<Link
+					href="/"
+					className="btn btn-ghost text-lg sm:text-xl lg:text-2xl"
+				>
 					Purr &#128049; Tasks
 				</Link>
 			</div>
 			{session ? (
 				<div className="navbar-end">
-					{/* REVIEW: do not leave commented out code
-					<div className="form-control pr-2">
-						<input
-							type="text"
-							placeholder="Search"
-							className="input input-bordered w-24 md:w-auto"
-						/>
-					</div> */}
 					<p className="mr-2 hidden sm:block">{session.user.email}</p>
 
 					<div className="flex-none">
@@ -55,6 +47,4 @@ const NavBar: NextPage = async (): Promise<JSX.Element> => {
 			)}
 		</div>
 	);
-};
-
-export default NavBar;
+}

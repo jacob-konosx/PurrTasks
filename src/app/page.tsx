@@ -1,32 +1,29 @@
 "use client";
-import { NextPage } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-/** REVIEW:
- * you should avoid using relative imports, instead using absolute imports from the root, like from src 
- * Absolute imports would make this be like @/app/api/schema, you can check tutorials on how to enable this in NextJS/Typescript
-*/
-import { Task } from "./api/schema";
-import TaskCard from "./components/TaskCard";
-import TaskSettings from "./components/TaskSettings";
+
+import { Task } from "@/app/api/schema";
+import TaskCard from "@/app/components/TaskCard";
+import TaskSettings from "@/app/components/TaskSettings";
 import { useQuery } from "@tanstack/react-query";
 
-const fetchTasks = (): Promise<Task[]> =>
-	fetch(`/api/tasks`).then((res) => {
-		if (!res.ok) {
-			throw new Error("Failed to fetch");
-		}
-		return res.json();
-	})
+const fetchTasks = async (): Promise<Task[]> => {
+	const res = await fetch(`/api/tasks`);
 
-/** REVIEW: I would recommend using the export default function Home() syntax as it is simpler and does not require another export at the bottom */
-const Home: NextPage = (): JSX.Element => {
+	if (!res.ok) {
+		throw new Error("Failed to fetch");
+	}
+	const data = await res.json();
+	return data.userTasks;
+};
+
+export default function Home(): JSX.Element {
 	const { push } = useRouter();
 	const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
 	const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
-	const [showCompleted, setShowCompleted] = useState<boolean | null>();
+	const [showCompleted, setShowCompleted] = useState<boolean>(false);
 
-	const { isLoading, data, error } = useQuery({
+	const { isLoading, data } = useQuery({
 		queryKey: ["tasks"],
 		queryFn: fetchTasks,
 	});
@@ -35,19 +32,11 @@ const Home: NextPage = (): JSX.Element => {
 		if (data) {
 			localStorage.setItem("userTasks", JSON.stringify(data));
 
-			setUncompletedTasks(data.filter((task: Task) => !task.finished_at));
+			setUncompletedTasks(data.filter((task: Task) => !task.finishedAt));
 			setCompletedTasks(
-				data.filter((task: Task) => task.finished_at).reverse()
+				data.filter((task: Task) => task.finishedAt).reverse()
 			);
-			setShowCompleted(
-				!localStorage.getItem("showCompleted") ||
-					localStorage.getItem("showCompleted") === "false"
-					? false
-					: true
-			);
-		}
-		if (error) {
-			console.log(error);
+			setShowCompleted(localStorage.getItem("showCompleted") === "true");
 		}
 	}, [data]);
 
@@ -87,14 +76,14 @@ const Home: NextPage = (): JSX.Element => {
 			</div>
 		);
 
-	window.addEventListener("storage", () => {
-		setShowCompleted(localStorage.getItem("showCompleted") === "true");
-	});
 	return (
 		<div className="mt-24 !mb-12">
 			{completedTasks.length > 0 && (
 				<div className="justify-center flex">
-					<TaskSettings />
+					<TaskSettings
+						showCompleted={showCompleted}
+						setShowCompleted={setShowCompleted}
+					/>
 				</div>
 			)}
 			<div className=" sm:grid p-5 sm:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] sm:justify-items-center">
@@ -108,6 +97,4 @@ const Home: NextPage = (): JSX.Element => {
 			</div>
 		</div>
 	);
-};
-
-export default Home;
+}

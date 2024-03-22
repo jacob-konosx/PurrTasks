@@ -1,15 +1,55 @@
 "use client";
+
+import FormInput from "@/app/components/FormInput";
+import {
+	StringKeyObject,
+	signUpSchema,
+	validateSchema,
+} from "@/lib/validationSchema";
 import { useMutation } from "@tanstack/react-query";
-import { NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, FormEventHandler, useState } from "react";
 import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/success.css";
+import "react-simple-toasts/dist/theme/warning.css";
 
-const createUser = async (userData: any): Promise<any> => {
+const inputs = [
+	{
+		id: "firstName",
+		label: "firstName",
+		name: "First Name",
+		type: "text",
+		placeholder: "Enter first name",
+		svg: "M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z",
+	},
+	{
+		id: "lastName",
+		label: "lastName",
+		name: "Last Name",
+		type: "text",
+		placeholder: "Enter last name",
+		svg: "M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z",
+	},
+	{
+		id: "email",
+		label: "email",
+		name: "Email",
+		type: "email",
+		placeholder: "Enter email",
+	},
+	{
+		id: "password",
+		label: "password",
+		name: "Password",
+		type: "password",
+		placeholder: "Enter password",
+		svg: "M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z",
+	},
+];
+
+const createUser = async (userData: StringKeyObject) => {
 	const res = await fetch(`/api/auth/signup`, {
 		method: "POST",
 		body: JSON.stringify(userData),
@@ -17,18 +57,17 @@ const createUser = async (userData: any): Promise<any> => {
 	if (!res.ok) {
 		throw new Error("Failed to create user");
 	}
-	return res.json();
 };
 
-const page: NextPage = (): JSX.Element => {
-	const [userData, setUserData] = useState({
+export default function SignUp(): JSX.Element {
+	const { push } = useRouter();
+	const [error, setError] = useState<StringKeyObject>({});
+	const [userData, setUserData] = useState<StringKeyObject>({
 		firstName: "",
 		lastName: "",
 		email: "",
 		password: "",
 	});
-	const { data: session } = useSession();
-	const { push } = useRouter();
 
 	const { mutate, isPending, isSuccess } = useMutation({
 		mutationFn: createUser,
@@ -36,126 +75,53 @@ const page: NextPage = (): JSX.Element => {
 			toast("Verify email to sign in!", { theme: "success" });
 			push("/auth/signin");
 		},
-		onError: () => {
-			toast("Error creating user!", { theme: "failure" });
+		onError: (error: Error) => {
+			toast(`${error}`, { theme: "failure" });
 		},
 	});
 
-	useEffect(() => {
-		if (session) {
-			// REVIEW: why are you setting the window location directly now? You can use a push from the router to avoid this, or, look how NextJS can handle auth redirects directly from the server, instead of here
-			window.location.href = "/";
-		}
-	}, [session]);
-
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-		if (userData.firstName === "") {
-			toast("First name cannot be empty!", { theme: "warning" });
-			return;
-		} else if (userData.lastName === "") {
-			toast("Last name cannot be empty!", { theme: "warning" });
-			return;
-		} else if (userData.email === "") {
-			toast("Email cannot be empty!", { theme: "warning" });
-			return;
-		} else if (!emailRegex.test(userData.email)) {
-			toast("Invalid email!", { theme: "warning" });
-			return;
-		} else if (userData.password.length < 6) {
-			toast("Password must be at least 6 characters long!", {
-				theme: "warning",
-			});
-			return;
-		}
-		mutate(userData);
+		await validateSchema(signUpSchema, userData, mutate, setError);
 	};
+
+	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setUserData({ ...userData, [e.target.id]: e.target.value });
+	};
+
 	if (isPending || isSuccess) {
 		return (
 			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
 		);
 	}
+
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
-			{/* REVIEW: same here as it was elsewhere for labels: use them only on the label, not as a parent element containing everything, you can use a generic div for that*/}
-			{/* REVIEW: From a UX standpoint, you should have form fields indicate that they are in an error state and change their CSS */}
-			<label
-				htmlFor="first_name"
-				className="form-control w-full max-w-xs"
-			>
-				<div className="label">
-					<span className="label-text">First Name</span>
-				</div>
-				<input
-					id="first_name"
-					type="text"
-					placeholder="Enter first name"
-					className="input input-bordered w-full max-w-xs"
-					value={userData.firstName}
-					onChange={(e) =>
-						setUserData({ ...userData, firstName: e.target.value })
-					}
-				/>
-			</label>
-			<label htmlFor="last_name" className="form-control w-full max-w-xs">
-				<div className="label">
-					<span className="label-text">Last Name</span>
-				</div>
-				<input
-					id="last_name"
-					type="text"
-					placeholder="Enter last name"
-					className="input input-bordered w-full max-w-xs"
-					value={userData.lastName}
-					onChange={(e) =>
-						setUserData({ ...userData, lastName: e.target.value })
-					}
-				/>
-			</label>
-			<label htmlFor="email" className="form-control w-full max-w-xs">
-				<div className="label">
-					<span className="label-text">Email</span>
-				</div>
-				<input
-					id="email"
-					type="email"
-					placeholder="Enter email"
-					className="input input-bordered w-full max-w-xs"
-					value={userData.email}
-					onChange={(e) =>
-						setUserData({ ...userData, email: e.target.value })
-					}
-				/>
-			</label>
-			<label htmlFor="password" className="form-control w-full max-w-xs">
-				<div className="label">
-					<span className="label-text">Password</span>
-				</div>
-				<input
-					id="password"
-					type="password"
-					placeholder="Enter password"
-					className="input input-bordered w-full max-w-xs"
-					value={userData.password}
-					onChange={(e) =>
-						setUserData({ ...userData, password: e.target.value })
-					}
-				/>
+			<div>
+				{inputs.map((input, i) => (
+					<FormInput
+						key={i}
+						{...input}
+						onChange={onChange}
+						value={userData[input.id]}
+						error={error[input.id]}
+						svg={input.svg!}
+					/>
+				))}
 				<div className="label mt-2 mb-4">
 					<span className="label-text-alt">
 						Already have an account?
 					</span>
-					<span className="label-text-alt">
+					<span className="label-text-alt float-right">
 						<Link href="/auth/signin" className="text-stone-100">
 							SIGN IN
 						</Link>
 					</span>
 				</div>
-			</label>
-			<button className="btn btn-outline">SIGN UP</button>
+				<button className="btn btn-outline block m-auto">
+					SIGN UP
+				</button>
+			</div>
 		</form>
 	);
-};
-
-export default page;
+}

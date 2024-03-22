@@ -1,9 +1,14 @@
-import { sendEmail } from "@/app/lib/mailer";
+import { sendEmail } from "@/lib/mailer";
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../db";
-import { users } from "../../schema";
+import { db } from "@/app/api/db";
+import { User, users } from "@/app/api/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+
+const ONE_DAY = 86400000;
 
 export async function POST(request: NextRequest) {
 	const body = await request.json();
@@ -15,16 +20,15 @@ export async function POST(request: NextRequest) {
 	};
 
 	try {
-		// REVIEW: I would name this existingUser instead of oldUser for more clarity
-		const oldUser = await db.query.users.findFirst({
+		const existingUser = await db.query.users.findFirst({
 			where: eq(users.email, email),
 		});
 
-		if (oldUser) {
-			return new NextResponse(
-				JSON.stringify({
-					message: "User already exists!",
-				}),
+		if (existingUser) {
+			return NextResponse.json(
+				{
+					message: "User Already Exists",
+				},
 				{
 					status: 409,
 				}
@@ -33,29 +37,54 @@ export async function POST(request: NextRequest) {
 
 		const hashedPassword = await bcrypt.hash(password, 12);
 
-		await db.insert(users).values({
-			first_name: firstName,
-			last_name: lastName,
-			email,
-			password: hashedPassword,
-		});
+		const returningUser = await db
+			.insert(users)
+			.values({
+				firstName,
+				lastName,
+				email,
+				password: hashedPassword,
+			})
+			.returning();
 
-		const newUser = await db.query.users.findFirst({
-			where: eq(users.email, email),
-		});
-		await sendEmail(email, "VERIFY", newUser!.id);
+		const newUser: User = returningUser[0];
 
-		return new NextResponse(
-			JSON.stringify({ message: "User created successfully!" }),
+		if (!newUser) {
+			return NextResponse.json(
+				{
+					message: "Couldn't create user",
+				},
+				{
+					status: 409,
+				}
+			);
+		}
+
+		// Create a token to verify the user's email
+		const verifyToken = await bcrypt.hash(newUser.id.toString(), 10);
+
+		await db
+			.update(users)
+			.set({
+				verifyToken,
+				verifyTokenExpiry: dayjs
+					.utc(new Date(Date.now() + ONE_DAY))
+					.format("YYYY-MM-DD HH:mm:ss"),
+			})
+			.where(eq(users.id, newUser.id));
+
+		await sendEmail(newUser.email, "VERIFY", verifyToken);
+
+		return NextResponse.json(
+			{ message: "User created successfully" },
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error(error);
-		return new NextResponse(
-			JSON.stringify({
-				message: "Couldn't get create user",
+		return NextResponse.json(
+			{
+				message: "Couldn't create user",
 				error,
-			}),
+			},
 			{
 				status: 409,
 			}

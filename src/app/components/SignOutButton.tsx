@@ -1,12 +1,10 @@
 "use client"
-// REVIEW: does this need a "use client"? I do not see any use of state here, and the server render will never execute the onclick function anyway
-import { NextPage } from 'next';
+
 import { signOut } from 'next-auth/react';
 import toast from 'react-simple-toasts';
 import "react-simple-toasts/dist/theme/success.css";
 
-const SignOutButton: NextPage = (): JSX.Element => {
-	// REVIEW: I would place each attribute on a newline to be more easily readable
+export default function SignOutButton (): JSX.Element {
 	return (
 		<button onClick={() => {
 			signOut()
@@ -18,6 +16,3 @@ const SignOutButton: NextPage = (): JSX.Element => {
 		</button>
 	);
 };
-
-// REVIEW: missing ; (use Prettier auto formatting)
-export default SignOutButton
