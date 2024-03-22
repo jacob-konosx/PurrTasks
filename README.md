@@ -1,7 +1,5 @@
 # Purr Tasks
 ![Purr Tasks](screenshots/PurrTasksSplash.png 'Purr Tasks')
-
-<a href="https://www.freepik.com/free-psd/laptop-screen-mock-up_1195487.htm#fromView=search&page=1&position=0&uuid=cc97aa94-ddc3-466d-87d4-2bfb6432b007">Image by aleksandr_samochernyi on Freepik</a>
 ## Features
 
 - Email/Password authentication
