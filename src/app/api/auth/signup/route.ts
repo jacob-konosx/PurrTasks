@@ -1,4 +1,4 @@
-import { sendEmail } from "@/app/lib/mailer";
+import { sendEmail } from "@/lib/mailer";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/app/api/db";
 import { User, users } from "@/app/api/schema";

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@libsql/client": "^0.5.6",
@@ -36,9 +37,9 @@
     "@tanstack/eslint-plugin-query": "^5.18.0",
     "@types/bcrypt": "^5.0.2",
     "@types/lodash": "^4.14.202",
-    "@types/node": "^20.10.6",
+    "@types/node": "^20.11.28",
     "@types/nodemailer": "^6.4.14",
-    "@types/react": "^18",
+    "@types/react": "^18.2.66",
     "@types/react-datepicker": "^4.19.5",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
@@ -46,6 +47,6 @@
     "drizzle-kit": "^0.20.14",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "typescript": "^5.4.2"
   }
 }

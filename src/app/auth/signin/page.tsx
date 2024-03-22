@@ -11,7 +11,7 @@ import {
 	StringKeyObject,
 	signInSchema,
 	validateSchema,
-} from "@/app/lib/validationSchema";
+} from "@/lib/validationSchema";
 import FormInput from "@/app/components/FormInput";
 import { useRouter } from "next/navigation";
 

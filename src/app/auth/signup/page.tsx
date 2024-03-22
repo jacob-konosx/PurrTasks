@@ -5,7 +5,7 @@ import {
 	StringKeyObject,
 	signUpSchema,
 	validateSchema,
-} from "@/app/lib/validationSchema";
+} from "@/lib/validationSchema";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { and, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -38,7 +38,10 @@ export async function DELETE(
 	}
 }
 
-export async function GET(request: NextRequest, context: { params: { id: number } }) {
+export async function GET(
+	request: NextRequest,
+	context: { params: { id: number } }
+) {
 	const session = await getServerSession(authOptions);
 	// Middleware ensures that session is not null and that the user is authenticated
 	const userId = session!.user.id;

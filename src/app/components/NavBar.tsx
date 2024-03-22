@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { authOptions } from "@/app/lib/auth";
+import { authOptions } from "@/lib/auth";
 import LoginBtn from "@/app/components/LoginBtn";
 import SignOutButton from "@/app/components/SignOutButton";
 
@@ -47,4 +47,4 @@ export default async function NavBar(): Promise<JSX.Element> {
 			)}
 		</div>
 	);
-};
+}

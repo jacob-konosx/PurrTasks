@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { and, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";

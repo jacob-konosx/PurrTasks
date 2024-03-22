@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { and, asc, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
 		const res = await fetch(`https://api.thecatapi.com/v1/images/search`, {
 			method: "GET",
 		});
-		const img_data = await res.json();
-		const imgUrl = img_data[0].url;
+		const imgData = await res.json();
+		const imgUrl = imgData[0].url;
 
 		await db.insert(tasks).values({
 			userId,
