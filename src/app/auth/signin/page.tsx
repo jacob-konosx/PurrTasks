@@ -13,7 +13,6 @@ import {
 	validateSchema,
 } from "@/lib/validationSchema";
 import FormInput from "@/app/components/FormInput";
-import { useRouter } from "next/navigation";
 
 const inputs = [
 	{
@@ -43,11 +42,11 @@ const validationSuccessFunction = async (userData: StringKeyObject) => {
 		toast(res?.error, { theme: "failure" });
 	} else {
 		toast("Sign-in Successful!", { theme: "success" });
+		window.location.href = "/";
 	}
 };
 
 export default function SignIn(): JSX.Element {
-	const { push } = useRouter();
 	const [error, setError] = useState<StringKeyObject>({});
 	const [userData, setUserData] = useState<StringKeyObject>({
 		email: "",
@@ -56,15 +55,12 @@ export default function SignIn(): JSX.Element {
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		const isValidated = await validateSchema(
+		await validateSchema(
 			signInSchema,
 			userData,
 			validationSuccessFunction,
 			setError
 		);
-		if (isValidated) {
-			push("/");
-		}
 	};
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {

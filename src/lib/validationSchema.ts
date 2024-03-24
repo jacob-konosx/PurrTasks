@@ -81,7 +81,6 @@ export const validateSchema = async (
 		await schema.validate(validationData, { abortEarly: false });
 		await validationSuccessFunction(validationData);
 		setError({});
-		return true;
 	} catch (error: any) {
 		const newError: StringKeyObject = {};
 
@@ -90,6 +89,5 @@ export const validateSchema = async (
 				err.message;
 		});
 		setError(newError);
-		return false;
 	}
 };
