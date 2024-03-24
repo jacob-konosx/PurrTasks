@@ -3,9 +3,9 @@ import { Inter } from "next/font/google";
 import NavBar from "@/app/components/NavBar";
 import "@/app/globals.css";
 
-import NextAuthProvider from "@/app/NextAuthProvider";
+import NextAuthProvider from "@/providers/NextAuthProvider";
 import Footer from "@/app/components/Footer";
-import { ReactQueryProvider } from "@/app/ReactQueryProvider";
+import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 

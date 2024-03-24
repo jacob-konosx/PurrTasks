@@ -7,12 +7,14 @@ import {
 	useState,
 } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import toast from "react-simple-toasts";
-import "react-simple-toasts/dist/theme/failure.css";
-import "react-simple-toasts/dist/theme/warning.css";
 import CustomDateInput from "@/app/components/CustomDateInput";
 import { UseMutateFunction } from "@tanstack/react-query";
+import {
+	StringKeyObject,
+	taskDataSchema,
+	taskDataTagsSchema,
+	validateSchema,
+} from "@/lib/validationSchema";
 
 export interface TaskData {
 	id?: number;
@@ -38,15 +40,30 @@ export default function Form({
 	buttonText,
 }: FormProps): JSX.Element {
 	const [tagInput, setTagInput] = useState("");
+	const [error, setError] = useState<StringKeyObject>({});
 
-	const addTaskTag = (e: MouseEvent) => {
+	const addTaskTag = async (e: MouseEvent) => {
 		e.preventDefault();
-		if (tagInput === "" || tagInput.includes(",")) {
-			toast("Invalid Tag!", { theme: "warning" });
-			return;
+		const newTaskData: TaskData = {
+			...taskData,
+			tags: [...taskData.tags, tagInput],
+		};
+
+		try {
+			const isValid = await taskDataTagsSchema.validate(newTaskData, {
+				abortEarly: false,
+			});
+			if (isValid) {
+				setTaskData(newTaskData);
+				setTagInput("");
+				setError({
+					...error,
+					tags: "",
+				});
+			}
+		} catch (tagError: any) {
+			setError({ ...error, tags: tagError.inner[0].message });
 		}
-		setTaskData({ ...taskData, tags: [...taskData.tags, tagInput] });
-		setTagInput("");
 	};
 
 	const deleteTag = (e: MouseEvent, index: number) => {
@@ -60,38 +77,12 @@ export default function Form({
 	const isTimeInTheFuture = (time: Date): boolean => {
 		const currentDate = new Date();
 		const selectedDate = new Date(time);
-
 		return currentDate.getTime() < selectedDate.getTime();
 	};
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		if (taskData.title === "") {
-			toast("Title cannot be empty!", { theme: "warning" });
-			return;
-		}
-		if (taskData.text === "") {
-			toast("Description cannot be empty!", { theme: "warning" });
-			return;
-		}
-		if (taskData.text.length > 70) {
-			toast(
-				`Title too long! (${taskData.text.length - 70} chars too many)`,
-				{
-					theme: "warning",
-				}
-			);
-			return;
-		}
-		if (taskData.tags.length === 0) {
-			toast("Tags cannot be empty!", { theme: "warning" });
-			return;
-		}
-		if (taskData.tags.length > 5) {
-			toast("Cannot have more then 5 tags!", { theme: "warning" });
-			return;
-		}
-		mutate(taskData);
+		await validateSchema(taskDataSchema, taskData, mutate, setError);
 	};
 
 	return (
@@ -122,6 +113,9 @@ export default function Form({
 						setTaskData({ ...taskData, title: e.target.value })
 					}
 				/>
+				{error.title && (
+					<p className="text-rose-500 text-sm mt-1">{error.title}</p>
+				)}
 			</div>
 			<div className="form-control w-full max-w-xs">
 				<label htmlFor="description" className="label">
@@ -136,6 +130,9 @@ export default function Form({
 						setTaskData({ ...taskData, text: e.target.value })
 					}
 				/>
+				{error.text && (
+					<p className="text-rose-500 text-sm mt-1">{error.text}</p>
+				)}
 			</div>
 			<div className="form-control w-full max-w-xs">
 				<label htmlFor="tags" className="label">
@@ -177,6 +174,9 @@ export default function Form({
 						})}
 					</div>
 				)}
+				{error.tags && (
+					<p className="text-rose-500 text-sm mt-1">{error.tags}</p>
+				)}
 			</div>
 			<div className="form-control w-full max-w-xs">
 				<label htmlFor="endDate" className="label">
@@ -196,6 +196,9 @@ export default function Form({
 				filterTime={isTimeInTheFuture}
 				timeIntervals={5}
 			/>
+			{error.endDate && (
+				<p className="text-rose-500 text-sm mt-1">{error.endDate}</p>
+			)}
 			<button className="btn btn-outline mt-8">{buttonText}</button>
 		</form>
 	);
