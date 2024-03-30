@@ -1,20 +1,11 @@
 "use client";
 
+import { completeTask } from "@/lib/apicalls";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/success.css";
-
-const completeTask = async (taskId: number) => {
-	const res = await fetch(`/api/tasks/complete/${taskId}`, {
-		method: "PATCH",
-		body: JSON.stringify({ finishedAt: new Date() }),
-	});
-	if (!res.ok) {
-		throw new Error("Failed to complete task");
-	}
-};
 
 export default function CompleteButton({
 	taskId,
@@ -23,7 +14,7 @@ export default function CompleteButton({
 }): JSX.Element {
 	const { push } = useRouter();
 
-	const { mutate } = useMutation({
+	const { mutate, isPending } = useMutation({
 		mutationFn: completeTask,
 		onSuccess: () => {
 			toast("Task completed!", { theme: "success" });
@@ -41,6 +32,7 @@ export default function CompleteButton({
 
 	return (
 		<button
+			disabled={isPending}
 			className="btn btn-success btn-sm sm:btn-md"
 			onClick={handleComplete}
 		>

@@ -13,6 +13,9 @@ import {
 	validateSchema,
 } from "@/lib/validationSchema";
 import FormInput from "@/app/components/FormInput";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { is } from "drizzle-orm";
 
 const inputs = [
 	{
@@ -32,35 +35,39 @@ const inputs = [
 	},
 ];
 
-const validationSuccessFunction = async (userData: StringKeyObject) => {
+const loginFunction = async (userData: StringKeyObject) => {
 	const res = await signIn("credentials", {
 		redirect: false,
 		email: userData.email,
 		password: userData.password,
 	});
 	if (!res?.ok) {
-		toast(res?.error, { theme: "failure" });
-	} else {
-		toast("Sign-in Successful!", { theme: "success" });
-		window.location.href = "/";
+		throw new Error(res?.error!);
 	}
 };
 
 export default function SignIn(): JSX.Element {
+	const { push } = useRouter();
 	const [error, setError] = useState<StringKeyObject>({});
 	const [userData, setUserData] = useState<StringKeyObject>({
 		email: "",
 		password: "",
 	});
 
+	const { mutate, isPending } = useMutation({
+		mutationFn: loginFunction,
+		onSuccess: () => {
+			toast("Login successful!", { theme: "success" });
+			push("/");
+		},
+		onError: (error: Error) => {
+			toast(`${error}`, { theme: "failure" });
+		},
+	});
+
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		await validateSchema(
-			signInSchema,
-			userData,
-			validationSuccessFunction,
-			setError
-		);
+		await validateSchema(signInSchema, userData, mutate, setError);
 	};
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +76,9 @@ export default function SignIn(): JSX.Element {
 
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
+			{isPending && (
+				<span className="loading loading-ring  loading-lg absolute top-1/2 left-4/12" />
+			)}
 			<div>
 				{inputs.map((input, i) => (
 					<FormInput
@@ -90,7 +100,10 @@ export default function SignIn(): JSX.Element {
 						</Link>
 					</span>
 				</div>
-				<button className="btn btn-outline block m-auto">
+				<button
+					disabled={isPending}
+					className="btn btn-outline block m-auto"
+				>
 					SIGN IN
 				</button>
 			</div>

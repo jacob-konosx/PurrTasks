@@ -10,23 +10,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
+import { createTask } from "@/lib/apicalls";
 
-const addMins = (date: Date, minutes: number) =>{
+const addMins = (date: Date, minutes: number) => {
 	date.setMinutes(date.getMinutes() + minutes);
 	return date;
-}
-
-const createTask = async (taskData: TaskData) => {
-	const res = await fetch(`/api/tasks/`, {
-		method: "POST",
-		body: JSON.stringify(taskData),
-	});
-	if (!res.ok) {
-		throw new Error("Failed to create task");
-	}
 };
 
-export default function Create(): JSX.Element{
+export default function Create(): JSX.Element {
 	const { data: session } = useSession();
 	const { push } = useRouter();
 	const [taskData, setTaskData] = useState<TaskData>({
@@ -37,11 +28,11 @@ export default function Create(): JSX.Element{
 		endDate: addMins(new Date(), 5),
 	});
 
-	const { mutate } = useMutation({
+	const { mutate, isPending } = useMutation({
 		mutationFn: createTask,
-		onSuccess: () => {
+		onSuccess: (taskId: number) => {
 			toast("Task Created!", { theme: "success" });
-			push("/");
+			push(`/task/${taskId}`);
 		},
 		onError: (error: Error) => {
 			toast(`${error}`, { theme: "failure" });
@@ -54,6 +45,7 @@ export default function Create(): JSX.Element{
 			setTaskData={setTaskData}
 			mutate={mutate}
 			buttonText="CREATE TASK"
+			isPending={isPending}
 		/>
 	);
-};
+}

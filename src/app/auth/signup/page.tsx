@@ -1,6 +1,7 @@
 "use client";
 
 import FormInput from "@/app/components/FormInput";
+import { createUser } from "@/lib/apicalls";
 import {
 	StringKeyObject,
 	signUpSchema,
@@ -49,16 +50,6 @@ const inputs = [
 	},
 ];
 
-const createUser = async (userData: StringKeyObject) => {
-	const res = await fetch(`/api/auth/signup`, {
-		method: "POST",
-		body: JSON.stringify(userData),
-	});
-	if (!res.ok) {
-		throw new Error("Failed to create user");
-	}
-};
-
 export default function SignUp(): JSX.Element {
 	const { push } = useRouter();
 	const [error, setError] = useState<StringKeyObject>({});
@@ -69,7 +60,7 @@ export default function SignUp(): JSX.Element {
 		password: "",
 	});
 
-	const { mutate, isPending, isSuccess } = useMutation({
+	const { mutate, isPending } = useMutation({
 		mutationFn: createUser,
 		onSuccess: () => {
 			toast("Verify email to sign in!", { theme: "success" });
@@ -89,14 +80,11 @@ export default function SignUp(): JSX.Element {
 		setUserData({ ...userData, [e.target.id]: e.target.value });
 	};
 
-	if (isPending || isSuccess) {
-		return (
-			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
-		);
-	}
-
 	return (
 		<form className="grid place-items-center mt-24" onSubmit={handleSubmit}>
+			{isPending && (
+				<span className="loading loading-ring  loading-lg absolute top-2/3 left-4/12" />
+			)}
 			<div>
 				{inputs.map((input, i) => (
 					<FormInput
@@ -118,7 +106,10 @@ export default function SignUp(): JSX.Element {
 						</Link>
 					</span>
 				</div>
-				<button className="btn btn-outline block m-auto">
+				<button
+					disabled={isPending}
+					className="btn btn-outline block m-auto"
+				>
 					SIGN UP
 				</button>
 			</div>

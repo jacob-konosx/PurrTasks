@@ -3,7 +3,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/app/api/db";
-import { tasks } from "@/app/api/schema";
+import { Task, tasks } from "@/app/api/schema";
 
 export async function GET(request: NextRequest) {
 	const session = await getServerSession(authOptions);
@@ -49,17 +49,19 @@ export async function POST(request: NextRequest) {
 		const imgData = await res.json();
 		const imgUrl = imgData[0].url;
 
-		await db.insert(tasks).values({
+		const returningTask = await db.insert(tasks).values({
 			userId,
 			title,
 			text,
 			imgUrl,
 			tags: tags.toString(),
 			endDate,
-		});
+		}).returning();
+
+		const newTask: Task = returningTask[0];
 
 		return NextResponse.json(
-			{ message: `Task Created Successfully` },
+			{ message: `Task Created Successfully`, taskId: newTask.id },
 			{
 				status: 200,
 			}
