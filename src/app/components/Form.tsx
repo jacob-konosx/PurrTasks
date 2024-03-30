@@ -31,6 +31,7 @@ interface FormProps {
 	setTaskData: Dispatch<SetStateAction<TaskData>>;
 	mutate: UseMutateFunction<number | void, Error, TaskData, unknown>;
 	buttonText: string;
+	isPending: boolean;
 }
 
 export default function Form({
@@ -38,6 +39,7 @@ export default function Form({
 	setTaskData,
 	mutate,
 	buttonText,
+	isPending
 }: FormProps): JSX.Element {
 	const [tagInput, setTagInput] = useState("");
 	const [error, setError] = useState<StringKeyObject>({});
@@ -199,7 +201,7 @@ export default function Form({
 			{error.endDate && (
 				<p className="text-rose-500 text-sm mt-1">{error.endDate}</p>
 			)}
-			<button className="btn btn-outline mt-8">{buttonText}</button>
+			<button disabled={isPending} className="btn btn-outline mt-8">{buttonText}</button>
 		</form>
 	);
 }

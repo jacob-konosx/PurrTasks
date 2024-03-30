@@ -1,22 +1,12 @@
 "use client";
 
+import { verifyUser } from "@/lib/apicalls";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/success.css";
-
-const verifyUser = async (token: String) => {
-	const res = await fetch(`/api/users/verify`, {
-		method: "POST",
-		body: JSON.stringify({ token }),
-	});
-
-	if (!res.ok) {
-		throw new Error("Failed to verify user");
-	}
-};
 
 export default function Verify(): JSX.Element {
 	const searchParams = useSearchParams();
@@ -55,7 +45,7 @@ export default function Verify(): JSX.Element {
 					fill="#fffa"
 				></path>
 			</svg>
-			<span className="loading loading-ring loading-lg absolute top-1/2 left-[48.9%]" />
+			<span className="loading loading-ring loading-lg absolute top-1/2 left-1/2" />
 		</div>
 	);
 }

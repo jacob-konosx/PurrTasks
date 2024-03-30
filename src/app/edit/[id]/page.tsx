@@ -8,20 +8,7 @@ import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchTask } from "@/app/task/[id]/page";
-
-const editTask = async (taskData: TaskData) => {
-	const res = await fetch(`/api/tasks/edit/${taskData.id}`, {
-		method: "PUT",
-		body: JSON.stringify({
-			...taskData,
-			tags: taskData.tags.toString(),
-		}),
-	});
-	if (!res.ok) {
-		throw new Error("Failed to edit task");
-	}
-};
+import { editTask, fetchTask } from "@/lib/apicalls";
 
 export default function Edit({
 	params: { id },
@@ -37,7 +24,7 @@ export default function Edit({
 
 	if (isLoading)
 		return (
-			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
+			<span className="loading loading-ring loading-lg absolute top-1/2 left-1/2" />
 		);
 
 	if (!data) return <p className="text-lg text-center mt-32">Task not found!</p>;
@@ -48,7 +35,7 @@ export default function Edit({
 		endDate: new Date(data.endDate),
 	});
 
-	const { mutate } = useMutation({
+	const { mutate, isPending } = useMutation({
 		mutationFn: editTask,
 		onSuccess: () => {
 			toast("Task Edited!", { theme: "success" });
@@ -65,6 +52,7 @@ export default function Edit({
 			setTaskData={setTaskData}
 			mutate={mutate}
 			buttonText="EDIT TASK"
+			isPending={isPending}
 		/>
 	);
 }

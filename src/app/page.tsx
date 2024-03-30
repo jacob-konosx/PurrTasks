@@ -6,16 +6,7 @@ import { Task } from "@/app/api/schema";
 import TaskCard from "@/app/components/TaskCard";
 import TaskSettings from "@/app/components/TaskSettings";
 import { useQuery } from "@tanstack/react-query";
-
-const fetchTasks = async (): Promise<Task[]> => {
-	const res = await fetch(`/api/tasks`);
-
-	if (!res.ok) {
-		throw new Error(res.statusText);
-	}
-	const data = await res.json();
-	return data.userTasks;
-};
+import { fetchTasks } from "@/lib/apicalls";
 
 export default function Home(): JSX.Element {
 	const { push } = useRouter();
@@ -40,7 +31,7 @@ export default function Home(): JSX.Element {
 
 	if (isLoading)
 		return (
-			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
+			<span className="loading loading-ring loading-lg absolute top-1/2 left-1/2" />
 		);
 
 	if (uncompletedTasks.length === 0 && completedTasks.length === 0)

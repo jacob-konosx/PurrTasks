@@ -1,19 +1,11 @@
 "use client";
 
+import { deleteTask } from "@/lib/apicalls";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-simple-toasts";
 import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/success.css";
-
-const deleteTask = async (taskId: number) => {
-	const res = await fetch(`/api/tasks/${taskId}`, {
-		method: "DELETE",
-	});
-	if (!res.ok) {
-		throw new Error("Failed to delete task");
-	}
-};
 
 export default function DeleteButton({
 	taskId,
@@ -21,8 +13,7 @@ export default function DeleteButton({
 	taskId: number;
 }): JSX.Element {
 	const { push } = useRouter();
-
-	const { mutate } = useMutation({
+	const { mutate, isPending } = useMutation({
 		mutationFn: deleteTask,
 		onSuccess: () => {
 			toast("Task deleted!", { theme: "success" });
@@ -40,6 +31,7 @@ export default function DeleteButton({
 
 	return (
 		<button
+			disabled={isPending}
 			className="btn btn-error btn-sm sm:btn-md"
 			onClick={handleDelete}
 		>

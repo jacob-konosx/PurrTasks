@@ -6,19 +6,9 @@ import type { Task } from "@/app/api/schema";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQuery } from "@tanstack/react-query";
+import { fetchTask } from "@/lib/apicalls";
 
 dayjs.extend(utc);
-
-export const fetchTask = async (id: String): Promise<Task> => {
-	const res = await fetch(`/api/tasks/${id}`);
-
-	if (!res.ok) {
-		throw new Error(res.statusText);
-	}
-
-	const data = await res.json();
-	return data.userTask;
-};
 
 export default function Task({
 	params: { id },
