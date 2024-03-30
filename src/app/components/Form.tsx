@@ -29,7 +29,7 @@ export interface TaskData {
 interface FormProps {
 	taskData: TaskData;
 	setTaskData: Dispatch<SetStateAction<TaskData>>;
-	mutate: UseMutateFunction<void, Error, TaskData, unknown>;
+	mutate: UseMutateFunction<number | void, Error, TaskData, unknown>;
 	buttonText: string;
 }
 

@@ -10,7 +10,6 @@ export default function SignOutButton (): JSX.Element {
 			signOut()
 			toast("Sign-out Successful!", { theme: "success" });
 			localStorage.removeItem("showCompleted");
-			localStorage.removeItem("userTasks");
 		}} className="btn">
 			SIGN OUT
 		</button>

@@ -11,10 +11,10 @@ import "react-simple-toasts/dist/theme/failure.css";
 import "react-simple-toasts/dist/theme/warning.css";
 import "react-simple-toasts/dist/theme/success.css";
 
-const addMins = (date: Date, minutes: number) =>{
+const addMins = (date: Date, minutes: number) => {
 	date.setMinutes(date.getMinutes() + minutes);
 	return date;
-}
+};
 
 const createTask = async (taskData: TaskData) => {
 	const res = await fetch(`/api/tasks/`, {
@@ -24,9 +24,11 @@ const createTask = async (taskData: TaskData) => {
 	if (!res.ok) {
 		throw new Error("Failed to create task");
 	}
+	const data = await res.json();
+	return data.taskId;
 };
 
-export default function Create(): JSX.Element{
+export default function Create(): JSX.Element {
 	const { data: session } = useSession();
 	const { push } = useRouter();
 	const [taskData, setTaskData] = useState<TaskData>({
@@ -39,9 +41,9 @@ export default function Create(): JSX.Element{
 
 	const { mutate } = useMutation({
 		mutationFn: createTask,
-		onSuccess: () => {
+		onSuccess: (taskId: number) => {
 			toast("Task Created!", { theme: "success" });
-			push("/");
+			push(`/task/${taskId}`);
 		},
 		onError: (error: Error) => {
 			toast(`${error}`, { theme: "failure" });
@@ -56,4 +58,4 @@ export default function Create(): JSX.Element{
 			buttonText="CREATE TASK"
 		/>
 	);
-};
+}

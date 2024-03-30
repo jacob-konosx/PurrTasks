@@ -3,33 +3,47 @@ import Link from "next/link";
 import CompleteButton from "@/app/components/CompleteButton";
 import DeleteButton from "@/app/components/DeleteButton";
 import type { Task } from "@/app/api/schema";
-import { useMemo } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { useQuery } from "@tanstack/react-query";
 
 dayjs.extend(utc);
 
+export const fetchTask = async (id: String): Promise<Task> => {
+	const res = await fetch(`/api/tasks/${id}`);
+
+	if (!res.ok) {
+		throw new Error(res.statusText);
+	}
+
+	const data = await res.json();
+	return data.userTask;
+};
+
 export default function Task({
-	params,
+	params: { id },
 }: {
 	params: { id: string };
 }): JSX.Element {
-	const userTasks: Task[] = JSON.parse(
-		localStorage.getItem("userTasks") || "[]"
-	);
+	const { isLoading, data } = useQuery({
+		queryKey: ["task", id],
+		queryFn: () => fetchTask(id),
+		retry: false,
+	});
 
-	const task: Task | undefined = useMemo(
-		() => userTasks.find((task: Task) => task.id === parseInt(params.id)),
-		[params]
-	);
+	if (isLoading)
+		return (
+			<span className="loading loading-ring  loading-lg absolute top-1/2 left-1/2" />
+		);
 
-	if (!task) return <p className="text-center mt-24">Task not found!</p>;
+	if (!data)
+		return <p className="text-lg text-center mt-32">Task not found!</p>;
 
-	const date = dayjs.utc(task.endDate).local().format("HH:mm DD.MM.YYYY");
-	const tags: string[] = task.tags.split(",");
-	const status = task.finishedAt
+	const date = dayjs.utc(data.endDate).local().format("HH:mm DD.MM.YYYY");
+	const tags: string[] = data.tags.split(",");
+	const status = data.finishedAt
 		? "badge-success"
-		: dayjs(task.endDate).diff(dayjs().utc()) < 0
+		: dayjs(data.endDate).diff(dayjs().utc()) < 0
 		? "badge-error"
 		: "badge-primary";
 
@@ -42,13 +56,13 @@ export default function Task({
 				<img
 					className="block object-cover"
 					//
-					src={task.imgUrl}
+					src={data.imgUrl}
 					alt="cat"
 				/>
 			</figure>
 			<div className="card-body">
-				<h2 className="card-title">{task.title}</h2>
-				<p>{task.text}</p>
+				<h2 className="card-title">{data.title}</h2>
+				<p>{data.text}</p>
 				<div className="relative">
 					Tags:{" "}
 					{tags.map((tag, index) => (
@@ -58,18 +72,18 @@ export default function Task({
 					))}
 				</div>
 				<div className="card-actions justify-end m-auto mt-4 whitespace-nowrap">
-					{!task.finishedAt && (
+					{!data.finishedAt && (
 						<>
 							<Link
-								href={`/edit/${task.id}`}
+								href={`/edit/${data.id}`}
 								className="btn btn-warning btn-sm sm:btn-md"
 							>
 								EDIT
 							</Link>
-							<CompleteButton taskId={task.id} />
+							<CompleteButton taskId={data.id} />
 						</>
 					)}
-					<DeleteButton taskId={task.id} />
+					<DeleteButton taskId={data.id} />
 				</div>
 			</div>
 		</div>

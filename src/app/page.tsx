@@ -11,7 +11,7 @@ const fetchTasks = async (): Promise<Task[]> => {
 	const res = await fetch(`/api/tasks`);
 
 	if (!res.ok) {
-		throw new Error("Failed to fetch");
+		throw new Error(res.statusText);
 	}
 	const data = await res.json();
 	return data.userTasks;
@@ -30,8 +30,6 @@ export default function Home(): JSX.Element {
 
 	useEffect(() => {
 		if (data) {
-			localStorage.setItem("userTasks", JSON.stringify(data));
-
 			setUncompletedTasks(data.filter((task: Task) => !task.finishedAt));
 			setCompletedTasks(
 				data.filter((task: Task) => task.finishedAt).reverse()
