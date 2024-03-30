@@ -58,7 +58,8 @@ export default function SignIn(): JSX.Element {
 		mutationFn: loginFunction,
 		onSuccess: () => {
 			toast("Login successful!", { theme: "success" });
-			push("/");
+			// For some reason the useRouter push redirect is not working
+			window.location.href = "/";
 		},
 		onError: (error: Error) => {
 			toast(`${error}`, { theme: "failure" });
